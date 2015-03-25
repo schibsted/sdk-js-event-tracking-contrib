@@ -58,33 +58,39 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// TODO: Find a way to set options file
 
-	var Activity = __webpack_require__(5);
+	var activity = {};
 
-	var activity = new Activity({ pageId: 1, clientId: 2, activityType: 'Read'});
+	module.exports.initTracking = function(opts) {
+	    var Activity = __webpack_require__(5);
 
-	window.addEventListener('load', function() {
+	    activity = new Activity(opts);
 
-	    var pageEvents = __webpack_require__(1);
-	    pageEvents.pageLoad(activity);
-	    pageEvents.hashChange(activity);
-	    pageEvents.pageUnload(activity);
+	    window.addEventListener('load', function() {
 
-	    var click = __webpack_require__(2);
-	    click.button(activity);
-	    click.submit(activity);
+	        var pageEvents = __webpack_require__(1);
+	        pageEvents.pageLoad(activity);
+	        pageEvents.hashChange(activity);
+	        pageEvents.pageUnload(activity);
 
-	    var scrollT = __webpack_require__(3);
-	    scrollT.trackScrollRelative(activity, 25);
-	    // TODO: Need to fix this
-	    scrollT.trackScrollItems(activity);
+	        var click = __webpack_require__(2);
+	        click.button(activity);
+	        click.submit(activity);
 
-	    var social = __webpack_require__(4);
-	    social.trackFacebookLikes(activity);
-	    social.trackFacebookUnlikes(activity);
-	    social.trackFacebookShares(activity);
-	    social.trackTwitterShares(activity);
+	        var scrollT = __webpack_require__(3);
+	        scrollT.trackScrollRelative(activity, 25);
+	        // TODO: Need to fix this
+	        scrollT.trackScrollItems(activity);
 
-	}, false);
+	        var social = __webpack_require__(4);
+	        social.trackFacebookLikes(activity);
+	        social.trackFacebookUnlikes(activity);
+	        social.trackFacebookShares(activity);
+	        social.trackTwitterShares(activity);
+
+	    }, false);
+
+	    return activity.getPageViewId();
+	};
 
 	module.exports.getPageViewId = function() {
 	    return activity.getPageViewId();
