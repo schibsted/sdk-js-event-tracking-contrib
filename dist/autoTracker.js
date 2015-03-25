@@ -59,8 +59,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	// TODO: Find a way to set options file
 
 	var activity = {};
+	try {
+	    /* global _opt */
+	    var opts = _opt || {};
+	} catch (err) {
 
-	module.exports.initTracking = function(opts) {
+	}
+
+	function initTracking(opts) {
 	    var Activity = __webpack_require__(5);
 
 	    activity = new Activity(opts);
@@ -78,7 +84,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        var scrollT = __webpack_require__(3);
 	        scrollT.trackScrollRelative(activity, 25);
-	        // TODO: Need to fix this
 	        scrollT.trackScrollItems(activity);
 
 	        var social = __webpack_require__(4);
@@ -90,6 +95,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, false);
 
 	    return activity.getPageViewId();
+	}
+
+	module.exports.initTracking = function(opts) {
+	    initTracking(opts);
 	};
 
 	module.exports.getPageViewId = function() {
@@ -112,6 +121,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    activity.refreshUserIds(userId);
 	};
 
+	try {
+	    initTracking(opts);
+	} catch (err) {
+
+	}
+
 
 /***/ },
 /* 1 */
@@ -120,7 +135,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	module.exports.pageLoad = function(activity) {
-	    activity.events.trackPageLoad().send();
+	    var pageload = activity.events.trackPageLoad();
+	    appendPageMeta(pageload);
+	    pageload.send();
+
+	    function appendPageMeta(pageload) {
+	        var metas = document.getElementsByTagName('meta');
+	        var metaObject = {};
+	        var ogObject = {};
+	        var ogFlag = false;
+	        var metaFlag = false;
+
+	        for (var i = 0; i < metas.length; i++) {
+	            var meta = metas[i];
+	            if (meta.getAttribute('name') && meta.getAttribute('content')) {
+	                metaObject['spt:' + meta.getAttribute('name')] = meta.getAttribute('content');
+	                metaFlag = true;
+	            } else if (meta.getAttribute('property') && meta.getAttribute('content')) {
+	                var prop = meta.getAttribute('property');
+	                if (prop.indexOf('og:') > -1) {
+	                    ogObject['spt:' + prop] = meta.getAttribute('content');
+	                    ogFlag = true;
+	                }
+	            }
+	        }
+
+	        if (ogFlag) {
+	            pageload.addProperty('primary', 'spt:og', ogObject);
+	        }
+	        if (metaFlag) {
+	            pageload.addProperty('primary', 'spt:meta', metaObject);
+	        }
+	    }
 	};
 
 	module.exports.hashChange = function(activity) {
