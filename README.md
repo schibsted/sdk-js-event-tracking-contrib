@@ -59,3 +59,49 @@ All calls to get/set functions should be done after pageload is complete.
 `AutoTrack.logoutEvent()` - If a logged in user logs out, this function should be called. It will trigger a request for a new set of IDs.
 
 `AutoTrack.loginEvent(userId)` - If a logged out user logs in, this function should be called. It takes a `userId`, which is passed on to CIS as well as stored in a local cookie. The user must have accepted terms and conditions for spid or any similar ToC where the user agrees to being tracked.
+
+# Events that are tracked by default
+
+The following events are tracked by default:
+
+Pageload
+
+scroll (25% intervals),
+
+Facebook likes / removed likes - Your implementation of Facebook like button must be the current recommended implementation from Facebook.
+
+Twitter sharing - Your implementation of Twitter share button must be the current recommended implementation from Twitter.
+
+PageUnload - Experimental
+
+# Additional supported events
+
+## Track Visibility
+
+If the class `track-visibility` is set on any element, an event will be produced whenever that element enters and exits the viewport.
+
+The element needs to have an `id` parameter set as well in order to provide identification of the element. The `id` parameter should be unique for the page.
+
+## Track Click
+
+If the class `track-click` is set on any element, an event will be produced whenever that element, or a child element is clicked.
+
+The element needs to have an `id` parameter set as well in order to provide identification of the element. The `id` parameter should be unique for the page.
+
+## Track Form
+
+If the class `track-form` is set on any element, an event will be produced if the element produces an `onsubmit` event.
+
+The element needs to have an `id` parameter set as well in order to provide identification of the element. The `id` parameter should be unique for the page.
+
+## Track Comment
+
+If the class `track-comment` is set on any element, an event will be produced if the element produces an `onsubmit` event.
+
+The element needs to have an `id` parameter set as well in order to provide identification of the element. The `id` parameter should be unique for the page.
+
+## Track Poll
+
+If the class `track-poll` is set on any element, an event will be produced if the element produces an `onsubmit` event.
+
+The element needs to have an `id` parameter set as well in order to provide identification of the element. The `id` parameter should be unique for the page.
