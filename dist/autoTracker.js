@@ -421,7 +421,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var debug = __webpack_require__(12)('spt:pulse');
+	var debug = __webpack_require__(11)('spt:pulse');
 	var vars = {};
 	try {
 	    vars = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"vars\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
@@ -513,17 +513,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.user.getUserId(function(err, idObj) {
 	        if (err) {
-	            throw new Error('Could not fetch id');
-	        }
+	            debug('Failed to fetch userId', err);
 
-	        if (!self.visitorId) {
-	            self.visitorId = idObj.visitorId;
+	            self.visitorId = null;
+	            self.userId = null;
+	            self.envId = null;
+	            self.sessionId = null;
+	        } else {
+	            if (!self.visitorId) {
+	                self.visitorId = idObj.visitorId;
+	            }
+
+	            if (!self.userId) {
+	                self.userId = idObj.userId;
+	            }
+
+	            self.envId = idObj.envId;
+	            self.sessionId = idObj.sessionId;
 	        }
-	        if (!self.userId) {
-	            self.userId = idObj.userId;
-	        }
-	        self.envId = idObj.envId;
-	        self.sessionId = idObj.sessionId;
 
 	        if (self.waitingToTransmitQueue === true) {
 	            self.sendQueue();
@@ -580,24 +587,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.queue = [];
 
 	    var activity = this;
-	    try {
-	        if (!navigator.sendBeacon(this.url, queue)) {
-	            throw new Error('Not added to beacon send queue');
+
+	    this.transport(this.url, queue, function(err) {
+	        if (err) {
+	            debug('Failed to send queue');
+
+	            // Add failed items back into queue
+	            activity.queue = activity.queue.concat(queue);
+
+	            callback(err);
+	        } else {
+	            callback();
 	        }
-	    } catch (err) {
-	        this.transport(this.url, queue, function(err) {
-	            if (err) {
-	                debug('Failed to send queue');
-
-	                // Add failed items back into queue
-	                activity.queue = activity.queue.concat(queue);
-
-	                callback(err);
-	            } else {
-	                callback();
-	            }
-	        });
-	    }
+	    });
 	};
 
 	/**
@@ -606,31 +608,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {object} object
 	 */
 	Activity.prototype.addUserId = function(object) {
-	    if (this.visitorId !== undefined) {
-	        if (String(this.visitorId).indexOf('urn') === -1){
-	            object.actor['@id'] = 'urn:spid.no:person:' + this.visitorId;
-	        } else {
-	            object.actor['@id'] = this.visitorId;
-	        }
+	    if (typeof this.visitorId === 'undefined') {
+	        return;
+	    }
 
-	        if (String(this.envId).indexOf('urn') === -1){
-	            object.actor['spt:environmentId'] = 'urn:spid.no:environment:' + this.envId;
-	        } else {
-	            object.actor['spt:environmentId'] = this.envId;
-	        }
+	    if (this.visitorId !== null && String(this.visitorId).indexOf('urn') === -1) {
+	        object.actor['@id'] = 'urn:spid.no:person:' + this.visitorId;
+	    } else {
+	        object.actor['@id'] = this.visitorId;
+	    }
 
-	        if (String(this.sessionId).indexOf('urn') === -1){
-	            object.actor['spt:sessionId'] = 'urn:spid.no:session:' + this.sessionId;
-	        } else {
-	            object.actor['spt:sessionId'] = this.sessionId;
-	        }
+	    if (this.envId !== null && String(this.envId).indexOf('urn') === -1) {
+	        object.actor['spt:environmentId'] = 'urn:spid.no:environment:' + this.envId;
+	    } else {
+	        object.actor['spt:environmentId'] = this.envId;
+	    }
 
-	        if (typeof this.userId !== 'undefined' && String(this.userId).indexOf('undefined') === -1) {
-	            if (String(this.userId).indexOf('urn') === -1){
-	                object.actor['spt:userId'] = 'urn:' + this.userIdDomain + ':user:' + this.userId;
-	            } else {
-	                object.actor['spt:userId'] = this.userId;
-	            }
+	    if (this.sessionId !== null && String(this.sessionId).indexOf('urn') === -1) {
+	        object.actor['spt:sessionId'] = 'urn:spid.no:session:' + this.sessionId;
+	    } else {
+	        object.actor['spt:sessionId'] = this.sessionId;
+	    }
+
+	    if (this.userId && String(this.userId).indexOf('undefined') === -1) {
+	        if (String(this.userId).indexOf('urn') === -1){
+	            object.actor['spt:userId'] = 'urn:' + this.userIdDomain + ':user:' + this.userId;
+	        } else {
+	            object.actor['spt:userId'] = this.userId;
 	        }
 	    }
 	};
@@ -663,23 +667,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.addUserId(object);
 
-	    try {
-	        if (!navigator.sendBeacon(this.url, [object])) {
-	            throw new Error('Not added to beacon send queue');
+	    this.transport(this.url, [object], function(err) {
+	        if (err) {
+	            debug('Failed to send object');
+
+	            activity.addToQueue(object);
+
+	            callback(err);
+	        } else {
+	            callback();
 	        }
-	    } catch (err) {
-	        this.transport(this.url, [object], function(err) {
-	            if (err) {
-	                debug('Failed to send object');
-
-	                activity.addToQueue(object);
-
-	                callback(err);
-	            } else {
-	                callback();
-	            }
-	        });
-	    }
+	    });
 	};
 
 	/**
@@ -847,7 +845,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var EventObj = __webpack_require__(11);
+	var EventObj = __webpack_require__(12);
 
 	/**
 	 * Events constructor
@@ -1591,99 +1589,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
-
-	/**
-	 * Event constructor
-	 *
-	 * @param {Activity} activity
-	 * @param {object} data
-	 */
-	function Event(activity, data, objectOrder) {
-	    if (!activity) {
-	        throw new Error('activity required');
-	    }
-
-	    if (!data) {
-	        throw new Error('data required');
-	    }
-
-	    this.activity = activity;
-	    this.data = data;
-	    this.objectOrder = objectOrder || [];
-	}
-
-	/**
-	 * Add event to activity queue
-	 */
-	Event.prototype.queue = function() {
-	    this.activity.addToQueue(this.data);
-	};
-
-	/**
-	 * Send the event
-	 *
-	 * @param {function} callback
-	 */
-	Event.prototype.send = function(callback) {
-	    this.activity.send(this.data, callback);
-	};
-
-	/**
-	 * Add property to event
-	 *
-	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
-	 * @param {string} property - The property you want to add
-	 * @param {string | object} value - The value you want to give your property
-	 * @returns this
-	 */
-	Event.prototype.addProperty = function(obj, property, value) {
-	    var objKey = this.getObjectKey(obj);
-
-	    this.data[objKey][property] = value;
-
-	    return this;
-	};
-
-	/**
-	 * Add data to the 'spt:custom' property in a object. PS! The function doesn't merge data
-	 *
-	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
-	 * @param {string | object} data - The data you want to store in 'spt:custom'
-	 * @returns this
-	 */
-	Event.prototype.addCustomData = function(obj, data) {
-	    var objKey = this.getObjectKey(obj);
-
-	    this.data[objKey]['spt:custom'] = data;
-
-	    return this;
-	};
-
-	/**
-	 * Function that helps addProperty and addCustomData determin right object to access.
-	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
-	 * @returns which object should be accessed.
-	 */
-	Event.prototype.getObjectKey = function(obj) {
-	    if (obj === 'primary') {
-	        return this.objectOrder[0];
-	    } else if (obj === 'secondary') {
-	        return this.objectOrder[1];
-	    } else if (obj === 'tertiary') {
-	        return this.objectOrder[2];
-	    } else {
-	        throw new Error('Object reference not valid');
-	    }
-	};
-
-	module.exports = Event;
-
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
 	
 	/**
 	 * This is the web browser implementation of `debug()`.
@@ -1842,6 +1747,99 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	exports.enable(load());
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/**
+	 * Event constructor
+	 *
+	 * @param {Activity} activity
+	 * @param {object} data
+	 */
+	function Event(activity, data, objectOrder) {
+	    if (!activity) {
+	        throw new Error('activity required');
+	    }
+
+	    if (!data) {
+	        throw new Error('data required');
+	    }
+
+	    this.activity = activity;
+	    this.data = data;
+	    this.objectOrder = objectOrder || [];
+	}
+
+	/**
+	 * Add event to activity queue
+	 */
+	Event.prototype.queue = function() {
+	    this.activity.addToQueue(this.data);
+	};
+
+	/**
+	 * Send the event
+	 *
+	 * @param {function} callback
+	 */
+	Event.prototype.send = function(callback) {
+	    this.activity.send(this.data, callback);
+	};
+
+	/**
+	 * Add property to event
+	 *
+	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
+	 * @param {string} property - The property you want to add
+	 * @param {string | object} value - The value you want to give your property
+	 * @returns this
+	 */
+	Event.prototype.addProperty = function(obj, property, value) {
+	    var objKey = this.getObjectKey(obj);
+
+	    this.data[objKey][property] = value;
+
+	    return this;
+	};
+
+	/**
+	 * Add data to the 'spt:custom' property in a object. PS! The function doesn't merge data
+	 *
+	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
+	 * @param {string | object} data - The data you want to store in 'spt:custom'
+	 * @returns this
+	 */
+	Event.prototype.addCustomData = function(obj, data) {
+	    var objKey = this.getObjectKey(obj);
+
+	    this.data[objKey]['spt:custom'] = data;
+
+	    return this;
+	};
+
+	/**
+	 * Function that helps addProperty and addCustomData determin right object to access.
+	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
+	 * @returns which object should be accessed.
+	 */
+	Event.prototype.getObjectKey = function(obj) {
+	    if (obj === 'primary') {
+	        return this.objectOrder[0];
+	    } else if (obj === 'secondary') {
+	        return this.objectOrder[1];
+	    } else if (obj === 'tertiary') {
+	        return this.objectOrder[2];
+	    } else {
+	        throw new Error('Object reference not valid');
+	    }
+	};
+
+	module.exports = Event;
 
 
 /***/ },
