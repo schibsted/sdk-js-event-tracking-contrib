@@ -149,12 +149,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var i = 0; i < metas.length; i++) {
 	            var meta = metas[i];
 	            if (meta.getAttribute('name') && meta.getAttribute('content')) {
-	                metaObject['spt:' + meta.getAttribute('name')] = meta.getAttribute('content');
+	                metaObject['spt:' + meta.getAttribute('name')] = decodeURI(meta.getAttribute('content'));
 	                metaFlag = true;
 	            } else if (meta.getAttribute('property') && meta.getAttribute('content')) {
 	                var prop = meta.getAttribute('property');
 	                if (prop.indexOf('og:') > -1) {
-	                    ogObject['spt:' + prop] = meta.getAttribute('content');
+	                    ogObject['spt:' + prop] = decodeURI(meta.getAttribute('content'));
 	                    ogFlag = true;
 	                }
 	            }
@@ -421,7 +421,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var debug = __webpack_require__(11)('spt:pulse');
+	var debug = __webpack_require__(12)('spt:pulse');
 	var vars = {};
 	try {
 	    vars = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"vars\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
@@ -449,11 +449,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    this.vars = vars;
+	    this.clientId = 'urn:spid.no:' + opts.clientId;
 
 	    if (opts.url) {
-	        this.url = opts.url;
+	        this.url = opts.url + '/' + this.clientId;
 	    } else {
-	        this.url = this.vars.envVars.dataCollectorUrl;
+	        this.url = this.vars.envVars.dataCollectorUrl + '/' + this.clientId;
 	    }
 
 	    if (opts.transport) {
@@ -474,11 +475,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.opts = opts;
 	    this.pageViewId = Utils.getUuidV4();
-	    this.clientId = opts.clientId;
 	    this.pageId = opts.pageId;
 	    this.pageType = opts.pageType || 'Page';
 	    this.provider = opts.provider || {};
 	    this.userIdDomain = opts.userIdDomain || 'spid.no';
+	    this.noCisCookie = opts.noCisCookie || false;
 	    this.utils = Utils;
 
 	    this.queue = [];
@@ -493,7 +494,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    if (opts.userId) {
 	        this.userId = opts.userId;
+	        this.loggedIn = true;
+	    } else {
+	        this.loggedIn = false;
 	    }
+
+	    this.initIds(function() {});
+
+	}
+
+	Activity.prototype.initIds = function(callback) {
+
+	    callback = callback || function() {};
 
 	    var self = this;
 
@@ -517,10 +529,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            self.sendQueue();
 	            self.waitingToTransmitQueue = false;
 	        }
-	    });
 
-	    // Get various IDs:start
-	}
+	        return callback(idObj);
+
+	    });
+	};
 
 	/**
 	 * Add object to queue
@@ -567,19 +580,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.queue = [];
 
 	    var activity = this;
-
-	    this.transport(this.url, queue, function(err) {
-	        if (err) {
-	            debug('Failed to send queue');
-
-	            // Add failed items back into queue
-	            activity.queue = activity.queue.concat(queue);
-
-	            callback(err);
-	        } else {
-	            callback();
+	    try {
+	        if (!navigator.sendBeacon(this.url, queue)) {
+	            throw new Error('Not added to beacon send queue');
 	        }
-	    });
+	    } catch (err) {
+	        this.transport(this.url, queue, function(err) {
+	            if (err) {
+	                debug('Failed to send queue');
+
+	                // Add failed items back into queue
+	                activity.queue = activity.queue.concat(queue);
+
+	                callback(err);
+	            } else {
+	                callback();
+	            }
+	        });
+	    }
 	};
 
 	/**
@@ -645,17 +663,23 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.addUserId(object);
 
-	    this.transport(this.url, [object], function(err) {
-	        if (err) {
-	            debug('Failed to send object');
-
-	            activity.addToQueue(object);
-
-	            callback(err);
-	        } else {
-	            callback();
+	    try {
+	        if (!navigator.sendBeacon(this.url, [object])) {
+	            throw new Error('Not added to beacon send queue');
 	        }
-	    });
+	    } catch (err) {
+	        this.transport(this.url, [object], function(err) {
+	            if (err) {
+	                debug('Failed to send object');
+
+	                activity.addToQueue(object);
+
+	                callback(err);
+	            } else {
+	                callback();
+	            }
+	        });
+	    }
 	};
 
 	/**
@@ -696,7 +720,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var provider = {};
 
 	    provider['@type'] = 'Organization';
-	    provider['@id'] = 'urn:spid.no:' + this.clientId;
+	    provider['@id'] = this.clientId;
 	    provider.url = document.URL;
 
 	    for (var key in this.provider) {
@@ -775,6 +799,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.visitorId = undefined;
 	    this.userId = userId || undefined;
 
+	    this.loggedIn = false;
+
 	    this.user.setUserIdInCookie(false);
 
 	    var self = this;
@@ -821,7 +847,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var EventObj = __webpack_require__(12);
+	var EventObj = __webpack_require__(11);
 
 	/**
 	 * Events constructor
@@ -870,7 +896,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    activityObj.object = this.addPageStandards();
 	    activityObj.result = {
 	        '@type':    contentType,
-	        '@id':      this.pageId + ':form:' + formId
+	        '@id':      this.getUrnIdWithPageType() + ':form:' + formId
 	    };
 
 	    return new EventObj(this.activity, activityObj, ['object', 'result']);
@@ -912,13 +938,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var activityObj = this.activity.createScaffold();
 	    activityObj['@type'] = activityType || 'Accept';
 	    activityObj.object = {
-	        '@id':          this.pageId + ':element:' + elementId,
+	        '@id':          this.getUrnIdWithPageType(targetId, targetType) + ':element:' + elementId,
 	        '@type':        'Link',
 	        displayName:  displayName
 	    };
 
 	    activityObj.target = {
-	        '@id':          targetId,
+	        '@id':          this.getUrnIdWithPageType(targetId, targetType),
 	        '@type':        targetType
 	    };
 
@@ -938,11 +964,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    activityObj['@type'] = activityType || 'Like';
 	    activityObj.object = this.addPageStandards();
 	    activityObj.origin = {
-	        '@id':          this.pageId + ':element:' + elementId,
+	        '@id':          this.getUrnIdWithPageType() + ':element:' + elementId,
 	        '@type':        'Link'
 	    };
 	    activityObj.target = {
-	        '@id':          'urn:' + networkName.toLowerCase() + ':' + activityObj['@type'].toLowerCase(),
+	        '@id':          'urn:' + networkName.toLowerCase() + ':action:' + activityObj['@type'].toLowerCase(),
 	        '@type':        'Service'
 	    };
 
@@ -962,7 +988,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    activityObj['@type'] = activityType || 'Watch';
 	    activityObj.object = {
 	        '@type': mediaType,
-	        '@id': mediaId
+	        '@id': this.getUrnIdWithPageType() + ':' + mediaType + ':' + mediaId
 	    };
 	    activityObj.origin = this.addPageStandards();
 
@@ -982,7 +1008,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    activityObj.object = this.addPageStandards();
 	    activityObj.result = {
 	        '@type': 'Place',
-	        '@id': this.pageId + ':scroll:' + scrollDepth,
+	        '@id': this.getUrnIdWithPageType() + ':scroll:' + scrollDepth,
 	        'spt:depth': scrollDepth
 	    };
 
@@ -1004,7 +1030,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    activityObj.origin = this.addPageStandards();
 	    activityObj.object = {
 	        '@type': 'Content',
-	        '@id': this.pageId + ':element:' + elementId
+	        '@id': this.getUrnIdWithPageType() + ':element:' + elementId
 	    };
 	    if (time.start) {
 	        activityObj.object.startTime = time.start;
@@ -1034,7 +1060,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof targetId !== undefined && typeof targetType !== undefined) {
 	        activityObj.target = {
 	                '@type': targetType,
-	                '@id': targetId
+	                '@id': this.getUrnIdWithPageType(targetId, targetType)
 	        };
 	    }
 
@@ -1058,7 +1084,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	/**
-	 * Function for tracking any kind og event
+	 * Function for tracking any kind of event
 	 *
 	 * @param {object} obj - A object of Actvivtystream 2.0 objects (target, object, origin etc)
 	 * @param {string} activityType - The type of activity that is tracked.
@@ -1089,11 +1115,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var container = {};
 
 	    container['@type']         = this.activity.pageType;
-	    container['@id']           = this.activity.pageId;
+	    if (String(this.activity.pageId).indexOf('urn:') > -1) {
+	        container['@id']       = this.activity.pageId;
+	    } else {
+	        container['@id'] = this.getUrnIdWithPageType(this.activity.pageId);
+	    }
 	    container.url              = document.URL;
 	    container.displayName      = document.title;
 
 	    return container;
+	};
+
+	/**
+	 * Turn a pageId in to a pageId prefixed with urn, domain and pageType
+	 *
+	 * @returns {string} A prefixed ID. Or just a id if it allready contains urn.
+	 */
+	Events.prototype.getUrnIdWithPageType = function(id, pageType) {
+	    var useId = id || this.activity.pageId;
+	    if (String(useId).indexOf('urn:') === -1) {
+	        var type = pageType || this.activity.pageType;
+	        var domain = this.getDomainFromUrl(document.URL);
+	        return 'urn:' + domain + ':' + type.toLowerCase() + ':' + useId;
+	    } else {
+	        return useId;
+	    }
+	};
+
+	/**
+	 * Function that
+	 */
+	Events.prototype.getDomainFromUrl = function(url) {
+	    var matches = url.match(/^https?\:\/\/(www.)?([^\/:?#]+)(?:[\/:?#]|$)/i);
+	    return matches && matches[2];
 	};
 
 	module.exports = Events;
@@ -1285,6 +1339,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.sessionKey = '_DataTrackerSession';
 	    this.userKey = '_DataTrackerUser';
 	    this.visitorKey = '_DataTrackerVisitor';
+	    this.cookiesAllowed = navigator.cookieEnabled;
 
 	    this.activity = activity;
 
@@ -1317,6 +1372,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        cookieId.visitorId = visitorTemp;
 	    }
 
+	    if (this.activity.loggedIn === false && typeof cookieId.userId !== undefined) {
+	        cookieId = {
+	            sessionId: undefined,
+	            environmentId: undefined,
+	            userId: undefined,
+	            visitorId: undefined
+	        };
+	        this.transferUserData(cookieId);
+	    } else if (this.activity.loggedIn && typeof cookieId.userId === undefined) {
+	        cookieId.userId = this.activity.userId;
+	        this.transferUserData(cookieId);
+	    }
+
 	    var self = this;
 
 	    this.getUserIdFromService(cookieId, function(err, data) {
@@ -1325,20 +1393,47 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return callback(err);
 	        }
 
-	        self.idObj.userId = data.userId;
-	        self.idObj.sessionId = data.sessionId;
-	        self.idObj.visitorId = data.visitorId;
-	        self.idObj.envId = data.environmentId;
-	        self.idObj.temporaryId = false;
+	        self.transferUserData(data);
 
-	        if (data.environmentIdTemporary === true) {
-	            self.idObj.temporaryId = true;
+	        if (!data.cisCookiesSet && self.cookiesAllowed && !self.activity.noCisCookie) {
+	            self.getUserIdFromService({ping:'pong'}, function(err, pingData) {
+	                if (err) {
+	                    callback(err);
+	                }
+	                self.transferUserData(data);
+	                if (!pingData.cisCookiesSet && self.cookiesAllowed) {
+
+	                    var redirectString = 'http://stage-identity.spid.se/redirect';
+	                    redirectString += '?environmentId=' + self.idObj.envId;
+	                    redirectString += '&visitorId=' + self.idObj.visitorId;
+	                    redirectString += '&redirectUrl=' + document.location;
+
+	                    window.location.assign(redirectString);
+	                }
+	            });
 	        }
-
-	        self.setUserIdInCookie(self.idObj.temporaryId);
-
 	        callback(null, self.idObj);
+
 	    });
+	};
+
+	/**
+	 * Function that takes data returned from CIS and sets User parameters and requests creation of cookies.
+	 */
+	User.prototype.transferUserData = function(data) {
+	    this.idObj.userId = data.userId;
+	    this.idObj.sessionId = data.sessionId;
+	    this.idObj.visitorId = data.visitorId;
+	    this.idObj.envId = data.environmentId;
+	    this.idObj.temporaryId = false;
+
+	    if (data.environmentIdTemporary === true) {
+	        this.idObj.temporaryId = true;
+	    }
+
+	    if (this.idObj.envId !== null) {
+	        this.setUserIdInCookie(this.idObj.temporaryId);
+	    }
 	};
 
 	/**
@@ -1364,6 +1459,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	User.prototype.getUserIdFromService = function(id, callback) {
 	    var url = this.activity.opts.userServiceUrl || this.activity.vars.envVars.userServiceUrl;
+
+	    var withCredentials = true;
+	    if (this.activity.noCisCookie) {
+	        withCredentials = false;
+	    }
+
 	    this.transport(url, id, function(err, data) {
 
 	        if (err) {
@@ -1373,7 +1474,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var response = JSON.parse(data.response);
 
 	        callback(null, response.data);
-	    });
+	    }, withCredentials);
 	};
 
 	/**
@@ -1438,8 +1539,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {string} url
 	 * @param {object} data
 	 * @param {function} callback
+	 * @param {boolean} credentials - flag for the withCredentials option
 	 */
-	function browserTransport(url, data, callback) {
+	function browserTransport(url, data, callback, credentials) {
 	    if (!callback) {
 	        throw new Error('callback required');
 	    }
@@ -1451,6 +1553,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (!data || typeof data !== 'object') {
 	        return callback('data required');
 	    }
+
+	    credentials = credentials || false;
 
 	    Utils.retry(5, function(retryCallback) {
 	        var request = getXHR();
@@ -1469,6 +1573,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
 	        request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+	        request.withCredentials = credentials;
 
 	        try {
 	            var sendData = JSON.stringify(data);
@@ -1484,6 +1589,99 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/**
+	 * Event constructor
+	 *
+	 * @param {Activity} activity
+	 * @param {object} data
+	 */
+	function Event(activity, data, objectOrder) {
+	    if (!activity) {
+	        throw new Error('activity required');
+	    }
+
+	    if (!data) {
+	        throw new Error('data required');
+	    }
+
+	    this.activity = activity;
+	    this.data = data;
+	    this.objectOrder = objectOrder || [];
+	}
+
+	/**
+	 * Add event to activity queue
+	 */
+	Event.prototype.queue = function() {
+	    this.activity.addToQueue(this.data);
+	};
+
+	/**
+	 * Send the event
+	 *
+	 * @param {function} callback
+	 */
+	Event.prototype.send = function(callback) {
+	    this.activity.send(this.data, callback);
+	};
+
+	/**
+	 * Add property to event
+	 *
+	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
+	 * @param {string} property - The property you want to add
+	 * @param {string | object} value - The value you want to give your property
+	 * @returns this
+	 */
+	Event.prototype.addProperty = function(obj, property, value) {
+	    var objKey = this.getObjectKey(obj);
+
+	    this.data[objKey][property] = value;
+
+	    return this;
+	};
+
+	/**
+	 * Add data to the 'spt:custom' property in a object. PS! The function doesn't merge data
+	 *
+	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
+	 * @param {string | object} data - The data you want to store in 'spt:custom'
+	 * @returns this
+	 */
+	Event.prototype.addCustomData = function(obj, data) {
+	    var objKey = this.getObjectKey(obj);
+
+	    this.data[objKey]['spt:custom'] = data;
+
+	    return this;
+	};
+
+	/**
+	 * Function that helps addProperty and addCustomData determin right object to access.
+	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
+	 * @returns which object should be accessed.
+	 */
+	Event.prototype.getObjectKey = function(obj) {
+	    if (obj === 'primary') {
+	        return this.objectOrder[0];
+	    } else if (obj === 'secondary') {
+	        return this.objectOrder[1];
+	    } else if (obj === 'tertiary') {
+	        return this.objectOrder[2];
+	    } else {
+	        throw new Error('Object reference not valid');
+	    }
+	};
+
+	module.exports = Event;
+
+
+/***/ },
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -1644,99 +1842,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	exports.enable(load());
-
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	/**
-	 * Event constructor
-	 *
-	 * @param {Activity} activity
-	 * @param {object} data
-	 */
-	function Event(activity, data, objectOrder) {
-	    if (!activity) {
-	        throw new Error('activity required');
-	    }
-
-	    if (!data) {
-	        throw new Error('data required');
-	    }
-
-	    this.activity = activity;
-	    this.data = data;
-	    this.objectOrder = objectOrder || [];
-	}
-
-	/**
-	 * Add event to activity queue
-	 */
-	Event.prototype.queue = function() {
-	    this.activity.addToQueue(this.data);
-	};
-
-	/**
-	 * Send the event
-	 *
-	 * @param {function} callback
-	 */
-	Event.prototype.send = function(callback) {
-	    this.activity.send(this.data, callback);
-	};
-
-	/**
-	 * Add property to event
-	 *
-	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
-	 * @param {string} property - The property you want to add
-	 * @param {string | object} value - The value you want to give your property
-	 * @returns this
-	 */
-	Event.prototype.addProperty = function(obj, property, value) {
-	    var objKey = this.getObjectKey(obj);
-
-	    this.data[objKey][property] = value;
-
-	    return this;
-	};
-
-	/**
-	 * Add data to the 'spt:custom' property in a object. PS! The function doesn't merge data
-	 *
-	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
-	 * @param {string | object} data - The data you want to store in 'spt:custom'
-	 * @returns this
-	 */
-	Event.prototype.addCustomData = function(obj, data) {
-	    var objKey = this.getObjectKey(obj);
-
-	    this.data[objKey]['spt:custom'] = data;
-
-	    return this;
-	};
-
-	/**
-	 * Function that helps addProperty and addCustomData determin right object to access.
-	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
-	 * @returns which object should be accessed.
-	 */
-	Event.prototype.getObjectKey = function(obj) {
-	    if (obj === 'primary') {
-	        return this.objectOrder[0];
-	    } else if (obj === 'secondary') {
-	        return this.objectOrder[1];
-	    } else if (obj === 'tertiary') {
-	        return this.objectOrder[2];
-	    } else {
-	        throw new Error('Object reference not valid');
-	    }
-	};
-
-	module.exports = Event;
 
 
 /***/ },
