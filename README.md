@@ -3,13 +3,15 @@
 To get started with automatic tracking, please insert the following snippet as close to `</body>` as possible.
 
 ```
-var u=(("https:" == document.location.protocol) ? "https://cdn.spid.se/sdk/autoTracker.min.js" : "http://cdn.spid.se/sdk/autoTracker.min.js");
-var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript'; g.defer=true; g.async=true; g.src=u;
-s.parentNode.insertBefore(g,s);
-var _opt = {
-    pageId: /* a unique ID for the current page */,
-    clientId: /* your clientId (e.g VG, BT etc) */
-};
+<script type="text/javascript">
+    var u=(("https:" == document.location.protocol) ? "https://cdn.spid.se/sdk/autoTracker.min.js" : "http://cdn.spid.se/sdk/autoTracker.min.js");
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript'; g.defer=true; g.async=true; g.src=u;
+    s.parentNode.insertBefore(g,s);
+    var _opt = {
+        pageId: /* a unique ID for the current page */,
+        clientId: /* your clientId (e.g VG, BT etc) */
+    };
+</script>
 ```
 
 If you use any third party libraries for module loading (such as requirejs), you might have some issues with the current version of autoTracking. The recommendation in such case is to make your own implementation using the bare JS-SDK until an alternative is available.
