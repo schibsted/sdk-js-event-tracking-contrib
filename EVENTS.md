@@ -193,3 +193,129 @@ The JS-Snippet will track scrolling in 25% intervals. The Activity Type is `Arri
     "spt:depth": 25
 }
 ```
+
+## Visibility tracking
+
+If `.track-visibility` is present on any element, an activity will be generated whenever that element enters or exits the viewport.
+
+When an element enters the viewport, a `View`-type activity is generated. Please note that the `origin` is the page here, and that `object` is the element that entered viewport. A timestamp is included in `object` to indicate the time that the element entered the viewport.
+
+```
+"@context": [
+    "http://www.w3.org/ns/activitystreams",
+    {
+        "spt": "http://spid.no",
+        "spt:sdkType": "JS",
+        "spt:sdkVersion": "0.1.0"
+    }
+],
+"@id": "1640a37d-b40e-4385-9b5d-b8ae60c8a125",
+"spt:pageViewId": "3ccb53a7-2e51-4608-9c5e-efcd81e449ab",
+"published": "2015-04-20T15:36:56+02:00",
+"actor": {
+    "@type": "Person",
+    "@id": "urn:spid.no:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
+    "spt:environmentId": "urn:spid.no:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
+    "spt:sessionId": "urn:spid.no:session:8c11e4aa-f6f1-43ec-a68b-63dab9e5c7aa",
+    "spt:userId": "urn:spid.no:user:test123123",
+    "spt:remoteAddress": "127.0.0.1"
+},
+"provider": {
+    "@type": "Organization",
+    "@id": "urn:spid.no:test",
+    "url": "http://127.0.0.1:8082/index2.html"
+},
+"@type": "View",
+"origin": {
+    "@type": "Page",
+    "@id": "urn:127.0.0.1:page:test01",
+    "url": "http://127.0.0.1:8082/index2.html",
+    "displayName": "My first test site"
+},
+"object": {
+    "@type": "Content",
+    "@id": "urn:127.0.0.1:page:test01:element:testAd01",
+    "startTime": "2015-04-20T15:36:56+02:00"
+}
+```
+
+As soon as the element exits the viewport, a similar event is generated. But an `endTime`-property is now included in the `object`.
+
+```
+"@context": [
+    "http://www.w3.org/ns/activitystreams",
+    {
+        "spt": "http://spid.no",
+        "spt:sdkType": "JS",
+        "spt:sdkVersion": "0.1.0"
+    }
+],
+"@id": "ea0743eb-50e2-42bd-8875-0915b705b7c3",
+"spt:pageViewId": "3ccb53a7-2e51-4608-9c5e-efcd81e449ab",
+"published": "2015-04-20T15:46:20+02:00",
+"actor": {
+    "@type": "Person",
+    "@id": "urn:spid.no:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
+    "spt:environmentId": "urn:spid.no:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
+    "spt:sessionId": "urn:spid.no:session:8c11e4aa-f6f1-43ec-a68b-63dab9e5c7aa",
+    "spt:userId": "urn:spid.no:user:test123123",
+    "spt:remoteAddress": "127.0.0.1"
+},
+"provider": {
+    "@type": "Organization",
+    "@id": "urn:spid.no:test",
+    "url": "http://127.0.0.1:8082/index2.html"
+},
+"@type": "View",
+"origin": {
+    "@type": "Page",
+    "@id": "urn:127.0.0.1:page:test01",
+    "url": "http://127.0.0.1:8082/index2.html",
+    "displayName": "My first test site"
+},
+"object": {
+    "@type": "Content",
+    "@id": "urn:127.0.0.1:page:test01:element:testAd01",
+    "startTime": "2015-04-20T15:36:56+02:00",
+    "endTime": "2015-04-20T15:46:20+02:00"
+}
+```
+
+## Click tracking
+
+If the class `.track-click` is present in any element, the activity below will be generated whenever the element is clicked. Activity Type is `Accept` and there is a `target`-object present that represents the target of the element (or the element itself if no target is set).
+
+```
+"@context": [
+    "http://www.w3.org/ns/activitystreams",
+    {
+        "spt": "http://spid.no",
+        "spt:sdkType": "JS",
+        "spt:sdkVersion": "0.1.0"
+    }
+],
+"@id": "5b23dd19-0b8f-432a-8afe-272b80249d89",
+"spt:pageViewId": "51f689cf-378d-4c12-a505-e2f954153c0c",
+"published": "2015-04-20T15:28:36+02:00",
+"actor": {
+    "@type": "Person",
+    "@id": "urn:spid.no:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
+    "spt:environmentId": "urn:spid.no:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
+    "spt:sessionId": "urn:spid.no:session:8c11e4aa-f6f1-43ec-a68b-63dab9e5c7aa",
+    "spt:userId": "urn:spid.no:user:test123123",
+    "spt:remoteAddress": "127.0.0.1"
+},
+"provider": {
+    "@type": "Organization",
+    "@id": "urn:spid.no:test",
+    "url": "http://127.0.0.1:8082/index2.html"
+},
+"@type": "Accept",
+"object": {
+    "@id": "urn:127.0.0.1:page:test01:element:button01",
+    "@type": "Link"
+},
+"target": {
+    "@id": "urn:127.0.0.1:page:test01"
+}
+```
