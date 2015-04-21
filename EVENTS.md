@@ -319,3 +319,101 @@ If the class `.track-click` is present in any element, the activity below will b
     "@id": "urn:127.0.0.1:page:test01"
 }
 ```
+
+## Facebook like (create)
+
+If a user clicks the Facebook like button, an activity of type `Like` will be generated. The object is the page being shared, while origin is the button that generated the Like-event.
+
+```
+"@context": [
+    "http://www.w3.org/ns/activitystreams",
+    {
+        "spt": "http://spid.no",
+        "spt:sdkType": "JS",
+        "spt:sdkVersion": "0.1.0"
+    }
+],
+"@id": "a4f954bb-fee4-479e-a3a3-66dcb87c7a73",
+"spt:pageViewId": "19a4a764-6f92-488a-8563-b3c18679a2f5",
+"published": "2015-04-21T10:18:06+02:00",
+"actor": {
+    "@type": "Person",
+    "@id": "urn:spid.no:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
+    "spt:environmentId": "urn:spid.no:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
+    "spt:sessionId": "urn:spid.no:session:40de5011-e83a-4fc4-87e6-62e19a5eac34",
+    "spt:userId": "urn:spid.no:user:test123123",
+    "spt:remoteAddress": "127.0.0.1"
+},
+"provider": {
+    "@type": "Organization",
+    "@id": "urn:spid.no:test",
+    "url": "http://127.0.0.1:8082/index2.html"
+},
+"@type": "Like",
+"object": {
+    "@type": "Page",
+    "@id": "urn:127.0.0.1:page:test01",
+    "url": "http://127.0.0.1:8082/index2.html",
+    "displayName": "My first test site"
+},
+"origin": {
+    "@id": "urn:127.0.0.1:page:test01:element:facebook-like",
+    "@type": "Link"
+},
+"target": {
+    "@id": "urn:facebook:action:like",
+    "@type": "Service",
+    "url": "http://127.0.0.1:8082/index2.html"
+}
+```
+
+## Facebook remove
+
+If a user cancels a like, an activity of type `Remove` will be created. It is otherwise identical to a like-event.
+
+```
+"@context": [
+    "http://www.w3.org/ns/activitystreams",
+    {
+        "spt": "http://spid.no",
+        "spt:sdkType": "JS",
+        "spt:sdkVersion": "0.1.0"
+    }
+],
+"@id": "5e83b76d-10bc-4963-bba4-90563f7f4e04",
+"spt:pageViewId": "19a4a764-6f92-488a-8563-b3c18679a2f5",
+"published": "2015-04-21T10:19:46+02:00",
+"actor": {
+    "@type": "Person",
+    "@id": "urn:spid.no:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
+    "spt:environmentId": "urn:spid.no:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
+    "spt:sessionId": "urn:spid.no:session:40de5011-e83a-4fc4-87e6-62e19a5eac34",
+    "spt:userId": "urn:spid.no:user:test123123",
+    "spt:remoteAddress": "127.0.0.1"
+},
+"provider": {
+    "@type": "Organization",
+    "@id": "urn:spid.no:test",
+    "url": "http://127.0.0.1:8082/index2.html"
+},
+"@type": "Remove",
+"object": {
+    "@type": "Page",
+    "@id": "urn:127.0.0.1:page:test01",
+    "url": "http://127.0.0.1:8082/index2.html",
+    "displayName": "My first test site"
+},
+"origin": {
+    "@id": "urn:127.0.0.1:page:test01:element:facebook-unlike",
+    "@type": "Link"
+},
+"target": {
+    "@id": "urn:facebook:action:remove",
+    "@type": "Service",
+    "url": "http://127.0.0.1:8082/index2.html"
+}
+```
+
+## Twitter share
+
+There is also an activity for shares to Twitter. It is equal to the Facebook events above, but uses the Activity Type `Share`.
