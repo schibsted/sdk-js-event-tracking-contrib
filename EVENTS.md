@@ -320,6 +320,48 @@ If the class `.track-click` is present in any element, the activity below will b
 }
 ```
 
+## Form / Comment / Poll submits
+
+If a user fills out a form, submits a comment or votes in a poll. An activity of type `Post` is created. The `@id` of the result determines where the activity originated.
+
+```
+"@context": [
+    "http://www.w3.org/ns/activitystreams",
+    {
+        "spt": "http://spid.no",
+        "spt:sdkType": "JS",
+        "spt:sdkVersion": "0.1.0"
+    }
+],
+"@id": "46953af9-7c01-4c5b-b147-408e11ca71e0",
+"spt:pageViewId": "cfab080e-4b0e-440c-a528-d958eabc3d4f",
+"published": "2015-04-21T14:32:34+02:00",
+"actor": {
+    "@type": "Person",
+    "@id": "urn:spid.no:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
+    "spt:environmentId": "urn:spid.no:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
+    "spt:sessionId": "urn:spid.no:session:40de5011-e83a-4fc4-87e6-62e19a5eac34",
+    "spt:userId": "urn:spid.no:user:test123123",
+    "spt:remoteAddress": "127.0.0.1"
+},
+"provider": {
+    "@type": "Organization",
+    "@id": "urn:spid.no:test",
+    "url": "http://127.0.0.1:8082/index2.html"
+},
+"@type": "Post",
+"object": {
+    "@type": "Page",
+    "@id": "urn:127.0.0.1:page:test01",
+    "url": "http://127.0.0.1:8082/index2.html",
+    "displayName": "My first test site"
+},
+"result": {
+    "@type": "Note",
+    "@id": "urn:127.0.0.1:page:test01:form:testform09"
+}
+```
+
 ## Facebook like (create)
 
 If a user clicks the Facebook like button, an activity of type `Like` will be generated. The object is the page being shared, while origin is the button that generated the Like-event.
