@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>My first test site</title>
+    </head>
+    <body>
+        <h1>Testsite</h1>
+        <script type="text/javascript">
+            var u=(("https:" == document.location.protocol) ? "https://cdn.spid.se/sdk/autoTracker.min.js" : "http://cdn.spid.se/sdk/autoTracker.min.js");
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript'; g.defer=true; g.async=true; g.src=u;
+            s.parentNode.insertBefore(g,s);
+            var _opt = {
+                pageId: 89723423,
+                clientId: 'testClient01',
+                noCisCookie: false,
+                url: 'http://127.0.0.1:8002/api/v1/track'
+            };
+        </script>
+    </body>
+</html>
