@@ -421,7 +421,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var debug = __webpack_require__(12)('spt:pulse');
+	var debug = __webpack_require__(11)('spt:pulse');
 	var vars = {};
 	try {
 	    vars = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"vars\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
@@ -608,7 +608,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {object} object
 	 */
 	Activity.prototype.addUserId = function(object) {
-	    if (typeof this.visitorId === 'undefined') {
+	    if (typeof this.visitorId === 'undefined' || this.visitorId === 'undefined') {
 	        return;
 	    }
 
@@ -833,7 +833,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports.envVars = {
 	    dataCollectorUrl: 'http://127.0.0.1:8002/api/v1/track',
-	    userServiceUrl: 'http://stage-identity.spid.se/api/v1/identify',
+	    userServiceUrl: 'https://stage-identity.spid.se/api/v1/identify',
 	    errorReportingUrl: '',
 	    sdkVersion: '0.1.0'
 	};
@@ -845,7 +845,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var EventObj = __webpack_require__(11);
+	var EventObj = __webpack_require__(12);
 
 	/**
 	 * Events constructor
@@ -891,13 +891,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	Events.prototype.trackForm = function(formId, contentType, activityType) {
 	    var activityObj = this.activity.createScaffold();
 	    activityObj['@type'] = activityType || 'Post';
-	    activityObj.object = this.addPageStandards();
+	    activityObj.object = {
+	        '@id': this.getUrnIdWithPageType() + ':form:' + formId
+	    };
+	    activityObj.origin = this.addPageStandards();
 	    activityObj.result = {
 	        '@type':    contentType,
 	        '@id':      this.getUrnIdWithPageType() + ':form:' + formId
 	    };
 
-	    return new EventObj(this.activity, activityObj, ['object', 'result']);
+	    return new EventObj(this.activity, activityObj, ['object', 'result', 'origin']);
 	};
 
 	/**
@@ -1023,6 +1026,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @returns {object} Event object
 	 */
 	Events.prototype.trackVisibility = function(elementId, time, activityType) {
+	    if (typeof time === 'undefined') {
+	        throw new Error('No time parameter was passed to this function');
+	    }
 	    var activityObj = this.activity.createScaffold();
 	    activityObj['@type'] = activityType || 'View';
 	    activityObj.origin = this.addPageStandards();
@@ -1054,8 +1060,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var activityObj = this.activity.createScaffold();
 	    activityObj['@type'] = activityType || 'Leave';
 	    activityObj.object = this.addPageStandards();
+	    activityObj.target = {};
 
-	    if (typeof targetId !== undefined && typeof targetType !== undefined) {
+	    if (typeof targetId !== 'undefined' && typeof targetType !== 'undefined') {
 	        activityObj.target = {
 	                '@type': targetType,
 	                '@id': this.getUrnIdWithPageType(targetId, targetType)
@@ -1394,6 +1401,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        self.transferUserData(data);
 
 	        if (!data.cisCookiesSet && self.cookiesAllowed && !self.activity.noCisCookie) {
+	            console.log('do second request');
 	            self.getUserIdFromService({ping:'pong'}, function(err, pingData) {
 	                if (err) {
 	                    callback(err);
@@ -1571,7 +1579,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
 	        request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-	        request.withCredentials = credentials;
+	        request.withCredentials = true;
 
 	        try {
 	            var sendData = JSON.stringify(data);
@@ -1587,99 +1595,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	/**
-	 * Event constructor
-	 *
-	 * @param {Activity} activity
-	 * @param {object} data
-	 */
-	function Event(activity, data, objectOrder) {
-	    if (!activity) {
-	        throw new Error('activity required');
-	    }
-
-	    if (!data) {
-	        throw new Error('data required');
-	    }
-
-	    this.activity = activity;
-	    this.data = data;
-	    this.objectOrder = objectOrder || [];
-	}
-
-	/**
-	 * Add event to activity queue
-	 */
-	Event.prototype.queue = function() {
-	    this.activity.addToQueue(this.data);
-	};
-
-	/**
-	 * Send the event
-	 *
-	 * @param {function} callback
-	 */
-	Event.prototype.send = function(callback) {
-	    this.activity.send(this.data, callback);
-	};
-
-	/**
-	 * Add property to event
-	 *
-	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
-	 * @param {string} property - The property you want to add
-	 * @param {string | object} value - The value you want to give your property
-	 * @returns this
-	 */
-	Event.prototype.addProperty = function(obj, property, value) {
-	    var objKey = this.getObjectKey(obj);
-
-	    this.data[objKey][property] = value;
-
-	    return this;
-	};
-
-	/**
-	 * Add data to the 'spt:custom' property in a object. PS! The function doesn't merge data
-	 *
-	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
-	 * @param {string | object} data - The data you want to store in 'spt:custom'
-	 * @returns this
-	 */
-	Event.prototype.addCustomData = function(obj, data) {
-	    var objKey = this.getObjectKey(obj);
-
-	    this.data[objKey]['spt:custom'] = data;
-
-	    return this;
-	};
-
-	/**
-	 * Function that helps addProperty and addCustomData determin right object to access.
-	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
-	 * @returns which object should be accessed.
-	 */
-	Event.prototype.getObjectKey = function(obj) {
-	    if (obj === 'primary') {
-	        return this.objectOrder[0];
-	    } else if (obj === 'secondary') {
-	        return this.objectOrder[1];
-	    } else if (obj === 'tertiary') {
-	        return this.objectOrder[2];
-	    } else {
-	        throw new Error('Object reference not valid');
-	    }
-	};
-
-	module.exports = Event;
-
-
-/***/ },
-/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -1840,6 +1755,99 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	exports.enable(load());
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/**
+	 * Event constructor
+	 *
+	 * @param {Activity} activity
+	 * @param {object} data
+	 */
+	function Event(activity, data, objectOrder) {
+	    if (!activity) {
+	        throw new Error('activity required');
+	    }
+
+	    if (!data) {
+	        throw new Error('data required');
+	    }
+
+	    this.activity = activity;
+	    this.data = data;
+	    this.objectOrder = objectOrder || [];
+	}
+
+	/**
+	 * Add event to activity queue
+	 */
+	Event.prototype.queue = function() {
+	    this.activity.addToQueue(this.data);
+	};
+
+	/**
+	 * Send the event
+	 *
+	 * @param {function} callback
+	 */
+	Event.prototype.send = function(callback) {
+	    this.activity.send(this.data, callback);
+	};
+
+	/**
+	 * Add property to event
+	 *
+	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
+	 * @param {string} property - The property you want to add
+	 * @param {string | object} value - The value you want to give your property
+	 * @returns this
+	 */
+	Event.prototype.addProperty = function(obj, property, value) {
+	    var objKey = this.getObjectKey(obj);
+
+	    this.data[objKey][property] = value;
+
+	    return this;
+	};
+
+	/**
+	 * Add data to the 'spt:custom' property in a object. PS! The function doesn't merge data
+	 *
+	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
+	 * @param {string | object} data - The data you want to store in 'spt:custom'
+	 * @returns this
+	 */
+	Event.prototype.addCustomData = function(obj, data) {
+	    var objKey = this.getObjectKey(obj);
+
+	    this.data[objKey]['spt:custom'] = data;
+
+	    return this;
+	};
+
+	/**
+	 * Function that helps addProperty and addCustomData determin right object to access.
+	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
+	 * @returns which object should be accessed.
+	 */
+	Event.prototype.getObjectKey = function(obj) {
+	    if (obj === 'primary') {
+	        return this.objectOrder[0];
+	    } else if (obj === 'secondary') {
+	        return this.objectOrder[1];
+	    } else if (obj === 'tertiary') {
+	        return this.objectOrder[2];
+	    } else {
+	        throw new Error('Object reference not valid');
+	    }
+	};
+
+	module.exports = Event;
 
 
 /***/ },
