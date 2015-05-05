@@ -4,13 +4,16 @@ To get started with automatic tracking, please insert the following snippet as c
 
 ```
 <script type="text/javascript">
-    var u=(("https:" == document.location.protocol) ? "https://cdn.spid.se/sdk/autoTracker.min.js" : "http://cdn.spid.se/sdk/autoTracker.min.js");
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript'; g.defer=true; g.async=true; g.src=u;
+var _opt = {
+    pageId: /* a unique ID for the current page */,
+    clientId: /* your clientId (e.g VG, BT etc) */
+};
+
+(function(){
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.src="//cdn.spid.se/sdk/autoTracker.min.js";
     s.parentNode.insertBefore(g,s);
-    var _opt = {
-        pageId: /* a unique ID for the current page */,
-        clientId: /* your clientId (e.g VG, BT etc) */
-    };
+})();
 </script>
 ```
 
