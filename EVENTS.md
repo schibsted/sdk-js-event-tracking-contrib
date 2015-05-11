@@ -32,7 +32,7 @@ Page loads use the Activity Type `Read`. The `object` is the entity that are loa
 "@context": [
     "http://www.w3.org/ns/activitystreams",
     {
-        "spt": "http://spid.no",
+        "spt": "http://schibsted.com",
         "spt:sdkType": "JS",
         "spt:sdkVersion": "0.1.0"
     }
@@ -46,14 +46,14 @@ Page loads use the Activity Type `Read`. The `object` is the entity that are loa
     "spt:screenSize": "1680x1050",
     "spt:viewportSize": "1313x502",
     "spt:acceptLanguage": "en-US",
-    "@id": "urn:spid.no:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
-    "spt:environmentId": "urn:spid.no:environment:f0ccaba92013d32562ddce1105c3f70710af9e3b7e13009776ab746352b569b8",
-    "spt:sessionId": "urn:spid.no:session:58d87b82-2518-45fd-a884-8b13157d7abe",
+    "@id": "urn:schibsted.com:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
+    "spt:environmentId": "urn:schibsted.com:environment:f0ccaba92013d32562ddce1105c3f70710af9e3b7e13009776ab746352b569b8",
+    "spt:sessionId": "urn:schibsted.com:session:58d87b82-2518-45fd-a884-8b13157d7abe",
     "spt:remoteAddress": "127.0.0.1"
 },
 "provider": {
     "@type": "Organization",
-    "@id": "urn:spid.no:2",
+    "@id": "urn:schibsted.com:2",
     "url": "http://127.0.0.1:8082/vg.html"
 },
 "@type": "Read",
@@ -81,7 +81,7 @@ The first event is based on engagement time, it has the Activity Type `View` and
 "@context": [
     "http://www.w3.org/ns/activitystreams",
     {
-        "spt": "http://spid.no",
+        "spt": "http://schibsted.com",
         "spt:sdkType": "JS",
         "spt:sdkVersion": "0.1.0"
     }
@@ -91,15 +91,15 @@ The first event is based on engagement time, it has the Activity Type `View` and
 "published": "2015-04-20T13:05:28+02:00",
 "actor": {
     "@type": "Person",
-    "@id": "urn:spid.no:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
-    "spt:environmentId": "urn:spid.no:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
-    "spt:sessionId": "urn:spid.no:session:8c11e4aa-f6f1-43ec-a68b-63dab9e5c7aa",
-    "spt:userId": "urn:spid.no:user:test123123",
+    "@id": "urn:schibsted.com:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
+    "spt:environmentId": "urn:schibsted.com:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
+    "spt:sessionId": "urn:schibsted.com:session:8c11e4aa-f6f1-43ec-a68b-63dab9e5c7aa",
+    "spt:userId": "urn:schibsted.com:user:test123123",
     "spt:remoteAddress": "127.0.0.1"
 },
 "provider": {
     "@type": "Organization",
-    "@id": "urn:spid.no:test",
+    "@id": "urn:schibsted.com:test",
     "url": "http://127.0.0.1:8082/index2.html"
 },
 "@type": "View",
@@ -118,7 +118,7 @@ The second event is a event that indicates that the user has left the page. It u
 "@context": [
     "http://www.w3.org/ns/activitystreams",
     {
-        "spt": "http://spid.no",
+        "spt": "http://schibsted.com",
         "spt:sdkType": "JS",
         "spt:sdkVersion": "0.1.0"
     }
@@ -128,15 +128,15 @@ The second event is a event that indicates that the user has left the page. It u
 "published": "2015-04-20T13:05:28+02:00",
 "actor": {
     "@type": "Person",
-    "@id": "urn:spid.no:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
-    "spt:environmentId": "urn:spid.no:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
-    "spt:sessionId": "urn:spid.no:session:8c11e4aa-f6f1-43ec-a68b-63dab9e5c7aa",
-    "spt:userId": "urn:spid.no:user:test123123",
+    "@id": "urn:schibsted.com:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
+    "spt:environmentId": "urn:schibsted.com:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
+    "spt:sessionId": "urn:schibsted.com:session:8c11e4aa-f6f1-43ec-a68b-63dab9e5c7aa",
+    "spt:userId": "urn:schibsted.com:user:test123123",
     "spt:remoteAddress": "127.0.0.1"
 },
 "provider": {
     "@type": "Organization",
-    "@id": "urn:spid.no:test",
+    "@id": "urn:schibsted.com:test",
     "url": "http://127.0.0.1:8082/index2.html"
 },
 "@type": "Leave",
@@ -160,7 +160,7 @@ The JS-Snippet will track scrolling in 25% intervals. The Activity Type is `Arri
 "@context": [
     "http://www.w3.org/ns/activitystreams",
     {
-        "spt": "http://spid.no",
+        "spt": "http://schibsted.com",
         "spt:sdkType": "JS",
         "spt:sdkVersion": "0.1.0"
     }
@@ -170,14 +170,14 @@ The JS-Snippet will track scrolling in 25% intervals. The Activity Type is `Arri
 "published": "2015-03-26T13:39:49+01:00",
 "actor": {
     "@type": "Person",
-    "@id": "urn:spid.no:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
-    "spt:environmentId": "urn:spid.no:environment:f0ccaba92013d32562ddce1105c3f70710af9e3b7e13009776ab746352b569b8",
-    "spt:sessionId": "urn:spid.no:session:58d87b82-2518-45fd-a884-8b13157d7abe",
+    "@id": "urn:schibsted.com:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
+    "spt:environmentId": "urn:schibsted.com:environment:f0ccaba92013d32562ddce1105c3f70710af9e3b7e13009776ab746352b569b8",
+    "spt:sessionId": "urn:schibsted.com:session:58d87b82-2518-45fd-a884-8b13157d7abe",
     "spt:remoteAddress": "127.0.0.1"
 },
 "provider": {
     "@type": "Organization",
-    "@id": "urn:spid.no:2",
+    "@id": "urn:schibsted.com:2",
     "url": "http://127.0.0.1:8082/vg.html"
 },
 "@type": "Arrive",
@@ -204,7 +204,7 @@ When an element enters the viewport, a `View`-type activity is generated. Please
 "@context": [
     "http://www.w3.org/ns/activitystreams",
     {
-        "spt": "http://spid.no",
+        "spt": "http://schibsted.com",
         "spt:sdkType": "JS",
         "spt:sdkVersion": "0.1.0"
     }
@@ -214,15 +214,15 @@ When an element enters the viewport, a `View`-type activity is generated. Please
 "published": "2015-04-20T15:36:56+02:00",
 "actor": {
     "@type": "Person",
-    "@id": "urn:spid.no:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
-    "spt:environmentId": "urn:spid.no:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
-    "spt:sessionId": "urn:spid.no:session:8c11e4aa-f6f1-43ec-a68b-63dab9e5c7aa",
-    "spt:userId": "urn:spid.no:user:test123123",
+    "@id": "urn:schibsted.com:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
+    "spt:environmentId": "urn:schibsted.com:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
+    "spt:sessionId": "urn:schibsted.com:session:8c11e4aa-f6f1-43ec-a68b-63dab9e5c7aa",
+    "spt:userId": "urn:schibsted.com:user:test123123",
     "spt:remoteAddress": "127.0.0.1"
 },
 "provider": {
     "@type": "Organization",
-    "@id": "urn:spid.no:test",
+    "@id": "urn:schibsted.com:test",
     "url": "http://127.0.0.1:8082/index2.html"
 },
 "@type": "View",
@@ -245,7 +245,7 @@ As soon as the element exits the viewport, a similar event is generated. But an 
 "@context": [
     "http://www.w3.org/ns/activitystreams",
     {
-        "spt": "http://spid.no",
+        "spt": "http://schibsted.com",
         "spt:sdkType": "JS",
         "spt:sdkVersion": "0.1.0"
     }
@@ -255,15 +255,15 @@ As soon as the element exits the viewport, a similar event is generated. But an 
 "published": "2015-04-20T15:46:20+02:00",
 "actor": {
     "@type": "Person",
-    "@id": "urn:spid.no:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
-    "spt:environmentId": "urn:spid.no:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
-    "spt:sessionId": "urn:spid.no:session:8c11e4aa-f6f1-43ec-a68b-63dab9e5c7aa",
-    "spt:userId": "urn:spid.no:user:test123123",
+    "@id": "urn:schibsted.com:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
+    "spt:environmentId": "urn:schibsted.com:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
+    "spt:sessionId": "urn:schibsted.com:session:8c11e4aa-f6f1-43ec-a68b-63dab9e5c7aa",
+    "spt:userId": "urn:schibsted.com:user:test123123",
     "spt:remoteAddress": "127.0.0.1"
 },
 "provider": {
     "@type": "Organization",
-    "@id": "urn:spid.no:test",
+    "@id": "urn:schibsted.com:test",
     "url": "http://127.0.0.1:8082/index2.html"
 },
 "@type": "View",
@@ -289,7 +289,7 @@ If the class `.track-click` is present in any element, the activity below will b
 "@context": [
     "http://www.w3.org/ns/activitystreams",
     {
-        "spt": "http://spid.no",
+        "spt": "http://schibsted.com",
         "spt:sdkType": "JS",
         "spt:sdkVersion": "0.1.0"
     }
@@ -299,15 +299,15 @@ If the class `.track-click` is present in any element, the activity below will b
 "published": "2015-04-20T15:28:36+02:00",
 "actor": {
     "@type": "Person",
-    "@id": "urn:spid.no:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
-    "spt:environmentId": "urn:spid.no:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
-    "spt:sessionId": "urn:spid.no:session:8c11e4aa-f6f1-43ec-a68b-63dab9e5c7aa",
-    "spt:userId": "urn:spid.no:user:test123123",
+    "@id": "urn:schibsted.com:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
+    "spt:environmentId": "urn:schibsted.com:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
+    "spt:sessionId": "urn:schibsted.com:session:8c11e4aa-f6f1-43ec-a68b-63dab9e5c7aa",
+    "spt:userId": "urn:schibsted.com:user:test123123",
     "spt:remoteAddress": "127.0.0.1"
 },
 "provider": {
     "@type": "Organization",
-    "@id": "urn:spid.no:test",
+    "@id": "urn:schibsted.com:test",
     "url": "http://127.0.0.1:8082/index2.html"
 },
 "@type": "Accept",
@@ -328,7 +328,7 @@ If a user fills out a form, submits a comment or votes in a poll. An activity of
 "@context": [
     "http://www.w3.org/ns/activitystreams",
     {
-        "spt": "http://spid.no",
+        "spt": "http://schibsted.com",
         "spt:sdkType": "JS",
         "spt:sdkVersion": "0.1.0"
     }
@@ -338,15 +338,15 @@ If a user fills out a form, submits a comment or votes in a poll. An activity of
 "published": "2015-04-21T14:32:34+02:00",
 "actor": {
     "@type": "Person",
-    "@id": "urn:spid.no:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
-    "spt:environmentId": "urn:spid.no:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
-    "spt:sessionId": "urn:spid.no:session:40de5011-e83a-4fc4-87e6-62e19a5eac34",
-    "spt:userId": "urn:spid.no:user:test123123",
+    "@id": "urn:schibsted.com:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
+    "spt:environmentId": "urn:schibsted.com:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
+    "spt:sessionId": "urn:schibsted.com:session:40de5011-e83a-4fc4-87e6-62e19a5eac34",
+    "spt:userId": "urn:schibsted.com:user:test123123",
     "spt:remoteAddress": "127.0.0.1"
 },
 "provider": {
     "@type": "Organization",
-    "@id": "urn:spid.no:test",
+    "@id": "urn:schibsted.com:test",
     "url": "http://127.0.0.1:8082/index2.html"
 },
 "@type": "Post",
@@ -370,7 +370,7 @@ If a user clicks the Facebook like button, an activity of type `Like` will be ge
 "@context": [
     "http://www.w3.org/ns/activitystreams",
     {
-        "spt": "http://spid.no",
+        "spt": "http://schibsted.com",
         "spt:sdkType": "JS",
         "spt:sdkVersion": "0.1.0"
     }
@@ -380,15 +380,15 @@ If a user clicks the Facebook like button, an activity of type `Like` will be ge
 "published": "2015-04-21T10:18:06+02:00",
 "actor": {
     "@type": "Person",
-    "@id": "urn:spid.no:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
-    "spt:environmentId": "urn:spid.no:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
-    "spt:sessionId": "urn:spid.no:session:40de5011-e83a-4fc4-87e6-62e19a5eac34",
-    "spt:userId": "urn:spid.no:user:test123123",
+    "@id": "urn:schibsted.com:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
+    "spt:environmentId": "urn:schibsted.com:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
+    "spt:sessionId": "urn:schibsted.com:session:40de5011-e83a-4fc4-87e6-62e19a5eac34",
+    "spt:userId": "urn:schibsted.com:user:test123123",
     "spt:remoteAddress": "127.0.0.1"
 },
 "provider": {
     "@type": "Organization",
-    "@id": "urn:spid.no:test",
+    "@id": "urn:schibsted.com:test",
     "url": "http://127.0.0.1:8082/index2.html"
 },
 "@type": "Like",
@@ -417,7 +417,7 @@ If a user cancels a like, an activity of type `Remove` will be created. It is ot
 "@context": [
     "http://www.w3.org/ns/activitystreams",
     {
-        "spt": "http://spid.no",
+        "spt": "http://schibsted.com",
         "spt:sdkType": "JS",
         "spt:sdkVersion": "0.1.0"
     }
@@ -427,15 +427,15 @@ If a user cancels a like, an activity of type `Remove` will be created. It is ot
 "published": "2015-04-21T10:19:46+02:00",
 "actor": {
     "@type": "Person",
-    "@id": "urn:spid.no:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
-    "spt:environmentId": "urn:spid.no:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
-    "spt:sessionId": "urn:spid.no:session:40de5011-e83a-4fc4-87e6-62e19a5eac34",
-    "spt:userId": "urn:spid.no:user:test123123",
+    "@id": "urn:schibsted.com:person:a77e5b92-e6ee-4552-a207-ecc35b7e688a",
+    "spt:environmentId": "urn:schibsted.com:environment:ec1df2d7d600247e67ec30ddfc26bf170c09dd782196939639be9f7d101f10ed",
+    "spt:sessionId": "urn:schibsted.com:session:40de5011-e83a-4fc4-87e6-62e19a5eac34",
+    "spt:userId": "urn:schibsted.com:user:test123123",
     "spt:remoteAddress": "127.0.0.1"
 },
 "provider": {
     "@type": "Organization",
-    "@id": "urn:spid.no:test",
+    "@id": "urn:schibsted.com:test",
     "url": "http://127.0.0.1:8082/index2.html"
 },
 "@type": "Remove",
