@@ -3,4 +3,4 @@ coverage
 dist
 src
 doc
-reports
+Gruntfile.js
