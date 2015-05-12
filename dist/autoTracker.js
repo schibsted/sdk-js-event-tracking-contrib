@@ -57,16 +57,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	var activity = {};
+	var activityOpts = {};
 	try {
 	    /* global _opt */
-	    var opts = _opt || {};
+		/* global pulse2opt */
+		if (typeof pulse2opt !== 'undefined') {
+			activityOpts = pulse2opt;
+		} else {
+			activityOpts = _opt;
+		}
 	} catch (err) {
 
 	}
 
-	function initTracking(opts) {
+	function initTracking(activityOpts) {
 	    var Activity = __webpack_require__(5);
-	    activity = new Activity(opts);
+	    activity = new Activity(activityOpts);
 
 		if (document.readyState === 'complete') {
 			trackingFunctions();
@@ -79,8 +85,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return activity.getPageViewId();
 	}
 
-	module.exports.initTracking = function(opts) {
-	    initTracking(opts);
+	module.exports.initTracking = function(activityOpts) {
+	    initTracking(activityOpts);
 	};
 
 	module.exports.getPageViewId = function() {
@@ -130,7 +136,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	try {
-	    initTracking(opts);
+	    initTracking(activityOpts);
 	} catch (err) {
 
 	}
@@ -453,7 +459,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    this.vars = vars;
-	    this.clientId = 'urn:spid.no:' + opts.clientId;
+	    this.clientId = 'urn:schibsted.com:' + opts.clientId;
 
 	    if (opts.url) {
 	        this.url = opts.url + '/' + this.clientId;
@@ -482,7 +488,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.pageId = opts.pageId || document.location;
 	    this.pageType = opts.pageType || 'Page';
 	    this.provider = opts.provider || {};
-	    this.userIdDomain = opts.userIdDomain || 'spid.no';
+	    this.userIdDomain = opts.userIdDomain || 'schibsted.com';
 	    this.noCisCookie = opts.noCisCookie || false;
 	    this.utils = Utils;
 
@@ -617,19 +623,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    if (this.visitorId !== null && String(this.visitorId).indexOf('urn') === -1) {
-	        object.actor['@id'] = 'urn:spid.no:person:' + this.visitorId;
+	        object.actor['@id'] = 'urn:schibsted.com:person:' + this.visitorId;
 	    } else {
 	        object.actor['@id'] = this.visitorId;
 	    }
 
 	    if (this.envId !== null && String(this.envId).indexOf('urn') === -1) {
-	        object.actor['spt:environmentId'] = 'urn:spid.no:environment:' + this.envId;
+	        object.actor['spt:environmentId'] = 'urn:schibsted.com:environment:' + this.envId;
 	    } else {
 	        object.actor['spt:environmentId'] = this.envId;
 	    }
 
 	    if (this.sessionId !== null && String(this.sessionId).indexOf('urn') === -1) {
-	        object.actor['spt:sessionId'] = 'urn:spid.no:session:' + this.sessionId;
+	        object.actor['spt:sessionId'] = 'urn:schibsted.com:session:' + this.sessionId;
 	    } else {
 	        object.actor['spt:sessionId'] = this.sessionId;
 	    }
@@ -743,7 +749,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var scaffold = {};
 
 	    var contextExtra = {
-	        spt:'http://spid.no',
+	        spt:'http://schibsted.com',
 	        'spt:sdkType': 'JS',
 	        'spt:sdkVersion': '0.1.0'
 	    };

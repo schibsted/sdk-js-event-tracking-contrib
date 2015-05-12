@@ -26,6 +26,8 @@ module.exports = {
 			
 			chai.assert.include(requestBody[0].object['@id'], 'urn:', 'pageId got urn');
 			chai.assert.include(requestBody[0].object['@id'], 'indexNoPageId.html', 'pageId passed');
+			chai.assert.include(requestBody[0].provider['@id'], 'testClient02');
+			chai.assert.notInclude(requestBody[0].provider['@id'], 'testClient01');
         })
         .end();
     }
