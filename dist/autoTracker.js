@@ -56,8 +56,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	// TODO: Find a way to set options file
-
 	var activity = {};
 	try {
 	    /* global _opt */
@@ -68,31 +66,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function initTracking(opts) {
 	    var Activity = __webpack_require__(5);
-
 	    activity = new Activity(opts);
 
-	    window.addEventListener('load', function() {
-
-	        var pageEvents = __webpack_require__(1);
-	        pageEvents.pageLoad(activity);
-	        pageEvents.hashChange(activity);
-	        pageEvents.pageUnload(activity);
-
-	        var click = __webpack_require__(2);
-	        click.button(activity);
-	        click.submit(activity);
-
-	        var scrollT = __webpack_require__(3);
-	        scrollT.trackScrollRelative(activity, 25);
-	        scrollT.trackScrollItems(activity);
-
-	        var social = __webpack_require__(4);
-	        social.trackFacebookLikes(activity);
-	        social.trackFacebookUnlikes(activity);
-	        social.trackFacebookShares(activity);
-	        social.trackTwitterShares(activity);
-
-	    }, false);
+		if (document.readyState === 'complete') {
+			trackingFunctions();
+		} else {
+			window.addEventListener('load', function() {
+				trackingFunctions();
+			}, false);
+		}
 
 	    return activity.getPageViewId();
 	}
@@ -120,6 +102,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports.loginEvent = function(userId) {
 	    activity.refreshUserIds(userId);
 	};
+
+	module.exports.activity = function() {
+	    return activity;
+	};
+
+	function trackingFunctions() {
+		console.log('Track page load init');
+	    var pageEvents = __webpack_require__(1);
+	    pageEvents.pageLoad(activity);
+	    pageEvents.hashChange(activity);
+	    pageEvents.pageUnload(activity);
+
+	    var click = __webpack_require__(2);
+	    click.button(activity);
+	    click.submit(activity);
+
+	    var scrollT = __webpack_require__(3);
+	    scrollT.trackScrollRelative(activity, 25);
+	    scrollT.trackScrollItems(activity);
+
+	    var social = __webpack_require__(4);
+	    social.trackFacebookLikes(activity);
+	    social.trackFacebookUnlikes(activity);
+	    social.trackFacebookShares(activity);
+	    social.trackTwitterShares(activity);
+	}
 
 	try {
 	    initTracking(opts);
@@ -421,7 +429,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var debug = __webpack_require__(11)('spt:pulse');
+	var debug = __webpack_require__(12)('spt:pulse');
 	var vars = {};
 	try {
 	    vars = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"vars\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
@@ -797,8 +805,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.visitorId = undefined;
 	    this.userId = userId || undefined;
 
-	    this.loggedIn = false;
-
+	    if (!userId) {
+	        this.loggedIn = false;
+	    } else {
+	        this.loggedIn = true;
+	    }
 	    this.user.setUserIdInCookie(false);
 
 	    var self = this;
@@ -807,8 +818,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (err) {
 	            throw new Error('Could not fetch id');
 	        }
-
-	        if (!self.visitorId) {
+	        if (!self.visitorId || typeof self.visitorId === 'undefined' || self.visitorId === 'undefined') {
 	            self.visitorId = idObj.visitorId;
 	        }
 	        if (!self.userId) {
@@ -845,7 +855,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var EventObj = __webpack_require__(12);
+	var EventObj = __webpack_require__(11);
 
 	/**
 	 * Events constructor
@@ -1317,6 +1327,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	};
 
+	module.exports.getQueryVariable = function(variable) {
+	    var query = window.location.search.substring(1);
+	    var vars = query.split('&');
+	    for (var i = 0; i < vars.length; i++) {
+	        var pair = vars[i].split('=');
+	        if (pair[0] === variable) {
+	            return pair[1];
+	        }
+	    }
+	    return undefined;
+	};
+
 
 /***/ },
 /* 9 */
@@ -1398,28 +1420,35 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return callback(err);
 	        }
 
+	        console.log('user data received');
+	        console.log(data);
 	        self.transferUserData(data);
+	        if (typeof self.activity.utils.getQueryVariable('failedToSetCookie') === 'undefined') {
+	            if (!data.cisCookieSet && self.cookiesAllowed && !self.activity.noCisCookie) {
+	                console.log('ping-pong sent');
+	                self.getUserIdFromService({ping:'pong'}, function(err, pingData) {
+	                    if (err) {
+	                        callback(err);
+	                    }
+	                    console.log(pingData);
+	                    self.transferUserData(pingData);
+	                    if (!pingData.cisCookieSet && self.cookiesAllowed) {
 
-	        if (!data.cisCookiesSet && self.cookiesAllowed && !self.activity.noCisCookie) {
-	            console.log('do second request');
-	            self.getUserIdFromService({ping:'pong'}, function(err, pingData) {
-	                if (err) {
-	                    callback(err);
-	                }
-	                self.transferUserData(data);
-	                if (!pingData.cisCookiesSet && self.cookiesAllowed) {
+	                        var redirectString = 'https://stage-identity.spid.se/redirect';
+	                        redirectString += '?environmentId=' + self.idObj.envId;
+	                        redirectString += '&visitorId=' + self.idObj.visitorId;
+	                        redirectString += '&redirectUrl=' + document.location;
 
-	                    var redirectString = 'http://stage-identity.spid.se/redirect';
-	                    redirectString += '?environmentId=' + self.idObj.envId;
-	                    redirectString += '&visitorId=' + self.idObj.visitorId;
-	                    redirectString += '&redirectUrl=' + document.location;
-
-	                    window.location.assign(redirectString);
-	                }
-	            });
+	                        window.location.assign(redirectString);
+	                    }
+	                    callback(null, self.idObj);
+	                });
+	            }
+	            callback(null, self.idObj);
 	        }
+	        console.log('callback called with:');
+	        console.log(self.idObj);
 	        callback(null, self.idObj);
-
 	    });
 	};
 
@@ -1476,8 +1505,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (err) {
 	            return callback(err);
 	        }
+	        console.log('request response');
+	        console.log(data);
 
-	        var response = JSON.parse(data.response);
+	        var response = JSON.parse(data.response || data.responseText);
 
 	        callback(null, response.data);
 	    }, withCredentials);
@@ -1579,10 +1610,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
 	        request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-	        request.withCredentials = true;
+	        request.withCredentials = credentials;
 
 	        try {
 	            var sendData = JSON.stringify(data);
+	            console.log('Data sent');
+	            console.log(sendData);
 	            request.send(sendData);
 	        } catch (err) {
 	            retryCallback(err.name + ': ' + err.message);
@@ -1595,6 +1628,99 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/**
+	 * Event constructor
+	 *
+	 * @param {Activity} activity
+	 * @param {object} data
+	 */
+	function Event(activity, data, objectOrder) {
+	    if (!activity) {
+	        throw new Error('activity required');
+	    }
+
+	    if (!data) {
+	        throw new Error('data required');
+	    }
+
+	    this.activity = activity;
+	    this.data = data;
+	    this.objectOrder = objectOrder || [];
+	}
+
+	/**
+	 * Add event to activity queue
+	 */
+	Event.prototype.queue = function() {
+	    this.activity.addToQueue(this.data);
+	};
+
+	/**
+	 * Send the event
+	 *
+	 * @param {function} callback
+	 */
+	Event.prototype.send = function(callback) {
+	    this.activity.send(this.data, callback);
+	};
+
+	/**
+	 * Add property to event
+	 *
+	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
+	 * @param {string} property - The property you want to add
+	 * @param {string | object} value - The value you want to give your property
+	 * @returns this
+	 */
+	Event.prototype.addProperty = function(obj, property, value) {
+	    var objKey = this.getObjectKey(obj);
+
+	    this.data[objKey][property] = value;
+
+	    return this;
+	};
+
+	/**
+	 * Add data to the 'spt:custom' property in a object. PS! The function doesn't merge data
+	 *
+	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
+	 * @param {string | object} data - The data you want to store in 'spt:custom'
+	 * @returns this
+	 */
+	Event.prototype.addCustomData = function(obj, data) {
+	    var objKey = this.getObjectKey(obj);
+
+	    this.data[objKey]['spt:custom'] = data;
+
+	    return this;
+	};
+
+	/**
+	 * Function that helps addProperty and addCustomData determin right object to access.
+	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
+	 * @returns which object should be accessed.
+	 */
+	Event.prototype.getObjectKey = function(obj) {
+	    if (obj === 'primary') {
+	        return this.objectOrder[0];
+	    } else if (obj === 'secondary') {
+	        return this.objectOrder[1];
+	    } else if (obj === 'tertiary') {
+	        return this.objectOrder[2];
+	    } else {
+	        throw new Error('Object reference not valid');
+	    }
+	};
+
+	module.exports = Event;
+
+
+/***/ },
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -1755,99 +1881,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	exports.enable(load());
-
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	/**
-	 * Event constructor
-	 *
-	 * @param {Activity} activity
-	 * @param {object} data
-	 */
-	function Event(activity, data, objectOrder) {
-	    if (!activity) {
-	        throw new Error('activity required');
-	    }
-
-	    if (!data) {
-	        throw new Error('data required');
-	    }
-
-	    this.activity = activity;
-	    this.data = data;
-	    this.objectOrder = objectOrder || [];
-	}
-
-	/**
-	 * Add event to activity queue
-	 */
-	Event.prototype.queue = function() {
-	    this.activity.addToQueue(this.data);
-	};
-
-	/**
-	 * Send the event
-	 *
-	 * @param {function} callback
-	 */
-	Event.prototype.send = function(callback) {
-	    this.activity.send(this.data, callback);
-	};
-
-	/**
-	 * Add property to event
-	 *
-	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
-	 * @param {string} property - The property you want to add
-	 * @param {string | object} value - The value you want to give your property
-	 * @returns this
-	 */
-	Event.prototype.addProperty = function(obj, property, value) {
-	    var objKey = this.getObjectKey(obj);
-
-	    this.data[objKey][property] = value;
-
-	    return this;
-	};
-
-	/**
-	 * Add data to the 'spt:custom' property in a object. PS! The function doesn't merge data
-	 *
-	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
-	 * @param {string | object} data - The data you want to store in 'spt:custom'
-	 * @returns this
-	 */
-	Event.prototype.addCustomData = function(obj, data) {
-	    var objKey = this.getObjectKey(obj);
-
-	    this.data[objKey]['spt:custom'] = data;
-
-	    return this;
-	};
-
-	/**
-	 * Function that helps addProperty and addCustomData determin right object to access.
-	 * @param {string} obj - Reference to the object you want to add property to (see Documentation)
-	 * @returns which object should be accessed.
-	 */
-	Event.prototype.getObjectKey = function(obj) {
-	    if (obj === 'primary') {
-	        return this.objectOrder[0];
-	    } else if (obj === 'secondary') {
-	        return this.objectOrder[1];
-	    } else if (obj === 'tertiary') {
-	        return this.objectOrder[2];
-	    } else {
-	        throw new Error('Object reference not valid');
-	    }
-	};
-
-	module.exports = Event;
 
 
 /***/ },
