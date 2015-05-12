@@ -30,6 +30,8 @@ module.exports = {
 			this.assert.notEqual(requestBody[0].actor, undefined);
 			this.assert.notEqual(requestBody[0].object, undefined);
 			chai.assert.include(res.value[1].url, '/api/v1/track', 'contains correct relpath');
+			chai.assert.include(requestBody[0].object['@id'], 'urn:', 'pageId got urn');
+			chai.assert.include(requestBody[0].object['@id'], '1234567', 'pageId passed');
         })
         .pause(1000)
         .execute(function(data) {

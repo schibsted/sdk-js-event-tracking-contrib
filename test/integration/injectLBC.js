@@ -2,7 +2,7 @@
 'use strict';
 
 module.exports = {
-    'Pageload with fake XHR' : function (browser) {
+    'Pageload LBC' : function (browser) {
         var chai = require('chai');
         var requests = [];
         browser
