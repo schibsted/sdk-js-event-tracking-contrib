@@ -95,6 +95,10 @@ module.exports = function (grunt) {
                 storeStatsTo: 'webpack_stats',
                 failOnError: true
             }
+        },
+        nightwatch: {
+            options: {
+            }
         }
     });
 
@@ -106,6 +110,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-jsdoc');
     grunt.loadNpmTasks('grunt-jscs');
+    grunt.loadNpmTasks('grunt-nightwatch');
 
     // Default task.
     grunt.registerTask('default', ['jshint', 'jscs', 'webpack:dev', 'jsdoc']);
@@ -113,5 +118,6 @@ module.exports = function (grunt) {
     grunt.registerTask('check', ['watch']);
     grunt.registerTask('lint', ['jshint', 'jscs']);
     grunt.registerTask('build', ['webpack:prod', 'lint', 'jsdoc']);
+    grunt.registerTask('integration', ['lint', 'webpack:dev', 'webpack:prod', 'nightwatch']);
 
 };

@@ -23,6 +23,7 @@
     "grunt-jscs": "^1.5.0",
     "grunt-jsdoc": "^0.5.7",
     "grunt-karma": "^0.10.1",
+    "grunt-nightwatch": "^0.4.6",
     "grunt-shell": "^1.1.1",
     "grunt-webpack": "^1.0.8",
     "istanbul-instrumenter-loader": "^0.1.2",
@@ -34,6 +35,7 @@
     "karma-sinon-chai": "^0.3.0",
     "karma-webpack": "^1.5.0",
     "mocha": "^2.1.0",
+    "nightwatch": "^0.6.5",
     "phantomjs": "^1.9.13",
     "sinon": "^1.12.2",
     "webpack-dev-server": "^1.7.0"
