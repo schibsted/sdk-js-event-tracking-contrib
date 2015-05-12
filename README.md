@@ -51,7 +51,7 @@ There are only two required options to be set in the `_opt` object.
 
 `userId` - If the user has a userId, please provide this as an option. The user must have agreed to terms and condition
 
-`pageId` - a unique string for the current page/article/ad/view. If not provided, the SDK will use `document.location` as pageId.
+`pageId` - a unique string for the current page/article/ad/view. If the current page/view doensn't have a pageId, leave it out, or provide a static string such as `'frontpage'` If not provided, the SDK will use `document.location` as pageId.
 
 Category - Category is not an option itself, but it should go in to the provider as demonstrated below.
 
