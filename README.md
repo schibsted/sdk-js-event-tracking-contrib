@@ -1,4 +1,22 @@
+# Difference between JS-Snippet and JS-SDK
+
+The [JS-SDK-Event-Tracking repository](https://github.com/schibsted/sdk-js-event-tracking) repository (JS-SDK) is the actual SDK. The SDK doesn’t track events automatically. The SDKs function is to provide IDs, functions for creating activitystream events and for transferring those events to a “data collector”. The SDK is meant to be extended in order to track data. One such extension is the tracking-snippet.
+
+The [JS-SDK-Event-Tracking-contrib](https://github.com/schibsted/sdk-js-event-tracking-contrib) repository (JS-Snippet) is an automatic tracking software. It builds on and includes the SDK. It has several kind of event listeners, and can be included in an existing site with a minimum of effort needed by the person implementing it.
+
+To see the events being produced by the snippet. Visit the [events page](https://github.com/schibsted/sdk-js-event-tracking-contrib/blob/master/EVENTS.md).
+
+![SDK and Snippet figure](images/js-sdk-flow.001.png)
+
 # Getting started
+
+This is a three step guide to get started.
+
+1. Put the Snippet found [here](https://github.com/schibsted/sdk-js-event-tracking-contrib#getting-started) in your page.
+2. Provide values to the `_opt` object as demonstrated [here](https://github.com/schibsted/sdk-js-event-tracking-contrib#example-of-recommended-implementation)
+3. Add any other [options](https://github.com/schibsted/sdk-js-event-tracking-contrib#optional-options) you need to the `_opt` object.
+
+# Snippet
 
 To get started with automatic tracking, please insert the following snippet as close to `</body>` as possible.
 
@@ -29,7 +47,36 @@ There are only two required options to be set in the `_opt` object.
 
 `clientId` - a string representing your organization, such as `VG` or `BT`
 
-`pageId` - a unique string for the current string.
+## Recommended options
+
+`userId` - If the user has a userId, please provide this as an option. The user must have agreed to terms and condition
+
+`pageId` - a unique string for the current page/article/ad/view. If not provided, the SDK will use `document.location` as pageId.
+
+Category - Category is not an option itself, but it should go in to the provider as demonstrated below.
+
+### Example of recommended implementation
+
+```
+<script type="text/javascript">
+var _opt = {
+    pageId: 908123112, 			// String or integer
+    clientId: 'Example', 		// String
+	userId: 987841231, 			// String or integer
+	provider: {					// Key/Value pairs. Keep keys in camel case
+		category: 'cars',
+		subCategory: 'ford',
+		yourKey: 'yourValue'
+	}
+};
+
+(function(){
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.src="//cdn.spid.se/sdk/autoTracker.min.js";
+    s.parentNode.insertBefore(g,s);
+})();
+</script>
+```
 
 ## Optional options
 
@@ -44,8 +91,6 @@ The following options can be set:
 `transport` - A object for transporting data from/to the identity service (CIS) and the data-collector. A default i provided from the SDK, so leave this one out unless you know what you are doing.
 
 `url` - If you want your data sent to an alternative data-collector instead of the SPT data-collector, specify the URL to you API end point here.
-
-`userId` - If the user has a userId, please provide this as an option. The user must have agreed to terms and condition
 
 `userIdDomain` - Please provide this property with a string defining the origin of your userIds (domain). Otherwise, the tracking software will assume that any userIds you pass with the `loginEvent` function or as a `userId` option have originated from schibsted.com
 
