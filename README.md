@@ -45,15 +45,19 @@ Options can be set in the `_opt` object in the tracking snippet.
 
 There are only two required options to be set in the `_opt` object.
 
-`clientId` - a string representing your organization, such as `VG` or `BT`
+`clientId` - a string representing your organization, such as `VG` or `BT`.
 
 `pageId` - a unique string for the current page/article/ad/view. If the current page/view doensn't have a pageId, leave it out, or provide a static string such as `'frontpage'`.
 
 ## Recommended options
 
-`userId` - If the user has a userId, please provide this as an option. The user must have agreed to terms and condition
+You should add the recommended options listed below. userId is so we can link the event to a logged in user (if the user is logged in) and category (if applicable) which helps us better tag the page view event.
 
-Category - Category is not an option itself, but it should go in to the provider as demonstrated below.
+`userId` - If the user has a userId (that is if the user is logged in), please provide this as an option. The user must have agreed to terms and condition
+
+Category - Category is not an option itself, but it should go in to the provider as demonstrated below. You may define a category and a subCategory.
+
+`provider` - This is where category and subCategory should go. You might also define as many key/value pairs as you want and input them in the provier to enrich your data. Please see the example below. The provider will be a part of the events that are sent from your site. It is the part of the event that defines where the events are coming from.
 
 ### Example of recommended implementation
 
@@ -83,8 +87,6 @@ var _opt = {
 The following options can be set:
 
 `pageType` - The type of page ('Page', 'Article', 'Application', 'Community', 'Service'). Should always be a valid Activitystreams 2.0 object type. (http://www.w3.org/TR/2015/WD-activitystreams-vocabulary-20150129/)
-
-`provider` - If you want to input meta to the provider field of the generated event, you can do so by passing an object to this property.
 
 `respectDoNotTrack` - If you want the tracking script to respect users who have set the doNotTrack flag, please set this option to `true`. Otherwise, the doNotTrack flag will not be respected.
 
