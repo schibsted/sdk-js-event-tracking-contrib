@@ -73,12 +73,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	function initTracking(activityOpts) {
 	    var Activity = __webpack_require__(5);
 	    activity = new Activity(activityOpts);
-
 		if (document.readyState === 'complete') {
-			trackingFunctions();
+			trackingFunctions(activityOpts.trackingFeatures);
 		} else {
 			window.addEventListener('load', function() {
-				trackingFunctions();
+				trackingFunctions(activityOpts.trackingFeatures);
 			}, false);
 		}
 
@@ -113,26 +112,44 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return activity;
 	};
 
-	function trackingFunctions() {
-		console.log('Track page load init');
+	function trackingFunctions(features) {
+		features = features || {};
 	    var pageEvents = __webpack_require__(1);
-	    pageEvents.pageLoad(activity);
-	    pageEvents.hashChange(activity);
-	    pageEvents.pageUnload(activity);
+		if (features.pageLoad !== false) {
+			pageEvents.pageLoad(activity);
+		}
+		if (features.hashChange !== false) {
+			pageEvents.hashChange(activity);
+		}
+		if (features.pageUnload !== false) {
+			pageEvents.pageUnload(activity);
+		}
 
 	    var click = __webpack_require__(2);
-	    click.button(activity);
-	    click.submit(activity);
+		if (features.clickButton !== false) {
+			click.button(activity);
+		}
+		if (features.clickSubmit !== false) {
+			click.submit(activity);
+		}
 
 	    var scrollT = __webpack_require__(3);
-	    scrollT.trackScrollRelative(activity, 25);
-	    scrollT.trackScrollItems(activity);
+		if (features.relativeScroll !== false) {
+			scrollT.trackScrollRelative(activity, 25);
+		}
+		if (features.itemVisible !== false) {
+			scrollT.trackScrollItems(activity);
+		}
 
 	    var social = __webpack_require__(4);
-	    social.trackFacebookLikes(activity);
-	    social.trackFacebookUnlikes(activity);
-	    social.trackFacebookShares(activity);
-	    social.trackTwitterShares(activity);
+		if (features.facebook !== false) {
+			social.trackFacebookLikes(activity);
+			social.trackFacebookUnlikes(activity);
+			social.trackFacebookShares(activity);
+		}
+		if (features.twitter !== false) {
+			social.trackTwitterShares(activity);
+		}
 	}
 
 	try {
