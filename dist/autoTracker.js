@@ -864,7 +864,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    dataCollectorUrl: 'http://127.0.0.1:8002/api/v1/track',
 	    userServiceUrl: 'https://stage-identity.spid.se/api/v1/identify',
 	    errorReportingUrl: '',
-	    sdkVersion: '0.1.0'
+	    sdkVersion: '0.3.0'
 	};
 
 
