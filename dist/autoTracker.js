@@ -507,6 +507,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.provider = opts.provider || {};
 	    this.userIdDomain = opts.userIdDomain || 'schibsted.com';
 	    this.noCisCookie = opts.noCisCookie || false;
+		this.noRedirect = true;
 	    this.utils = Utils;
 
 	    this.queue = [];
@@ -1417,7 +1418,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var cookieId = {
 	        sessionId: this.getUserIdFromCookie(this.sessionKey),
 	        environmentId: this.getUserIdFromCookie(this.envKey),
-	        userId: this.getUserIdFromCookie(this.userKey)
+	        userId: this.activity.opts.userId
 	    };
 
 	    var visitorTemp = this.getUserIdFromCookie(this.visitorKey);
@@ -1448,7 +1449,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        self.transferUserData(data);
 	        if (typeof self.activity.utils.getQueryVariable('failedToSetCookie') === 'undefined') {
-	            if (!data.cisCookieSet && self.cookiesAllowed && !self.activity.noCisCookie) {
+	            if (!data.cisCookieSet && self.cookiesAllowed && !self.activity.noCisCookie && !self.activity.noRedirect) {
 	                self.getUserIdFromService({ping:'pong'}, function(err, pingData) {
 	                    if (err) {
 	                        callback(err);
