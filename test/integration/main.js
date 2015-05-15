@@ -10,13 +10,13 @@ module.exports = {
         var tracker = {foo: 'baz'};
         var tracker2 = {foo: 'bar'};
         browser
-        .deleteCookies()
+        .url('http://127.0.0.1:8080/dev/index.html')
+        .waitForElementVisible('body', 1000)
+		.deleteCookies()
         .getCookies(function callback(result) {
             this.assert.equal(result.value.length, 0);
         })
-        .url('http://127.0.0.1:8080/dev/index.html')
-        .waitForElementVisible('body', 1000)
-        .pause(1000)
+        .pause(3000)
         .getCookies(function callback(result) {
             // spy = sinon.spy(AutoTrack.activity, 'transport');
             // console.log(result.value[2]);
@@ -35,8 +35,9 @@ module.exports = {
             AutoTrack.loginEvent('urn:lol.no:user:234232342');
         }, [''], function(result) {
         })
-        .pause(1000)
+        .pause(3000)
         .getCookies(function callback(resultNew) {
+			console.log(resultNew);
             // console.log(resultNew.value[2]);
             this.assert.notEqual(resultNew.value[2].value, noUserIdResult.value[2].value);
             this.assert.equal(resultNew.value[2].name, noUserIdResult.value[2].name);
@@ -46,7 +47,7 @@ module.exports = {
         .execute(function(data) {
             AutoTrack.logoutEvent();
         }, [''])
-        .pause(1000)
+        .pause(3000)
         .getCookies(function callback(resultNew2) {
             var self = this;
             self.assert.equal(resultNew2.value[2].value, noUserIdResult.value[2].value);

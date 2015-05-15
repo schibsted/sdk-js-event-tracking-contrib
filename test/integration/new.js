@@ -18,7 +18,7 @@ module.exports = {
 			this.assert.equal(res.value.length, 2);
 			this.assert.equal(res.value[0].requestBody, "{}");
 			this.assert.equal(res.value[0].withCredentials, true);
-			this.assert.equal(res.value[0].url, 'https://stage-identity.spid.se/api/v1/identify');
+			this.assert.equal(res.value[0].url, 'https://cis.schibsted.com/api/v1/identify');
 			
 			var requestBody = JSON.parse(res.value[1].requestBody);
 			

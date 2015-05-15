@@ -18,7 +18,7 @@ module.exports = {
 			this.assert.equal(res.value.length, 1);
 			this.assert.equal(res.value[0].requestBody, "{}");
 			this.assert.equal(res.value[0].withCredentials, true);
-			this.assert.equal(res.value[0].url, 'https://stage-identity.spid.se/api/v1/identify');
+			this.assert.equal(res.value[0].url, 'https://cis.schibsted.com/api/v1/identify');
         })
         .pause(1000)
 		.click('#test-click-element')
@@ -35,7 +35,7 @@ module.exports = {
 			this.assert.notEqual(requestBody[0].provider, undefined);
 			this.assert.notEqual(requestBody[0].actor, undefined);
 			this.assert.notEqual(requestBody[0].object, undefined);
-			chai.assert.includes(requesBody[0].object['@id'], 'test-click-element');
+			chai.assert.include(requestBody[0].object['@id'], 'test-click-element');
 			
         })
         .execute(function(data) {
