@@ -13,8 +13,8 @@ To see the events being produced by the snippet. Visit the [events page](https:/
 This is a three step guide to get started.
 
 1. Put the Snippet found [here](https://github.com/schibsted/sdk-js-event-tracking-contrib#getting-started) in your page.
-2. Provide values to the `_opt` object as demonstrated [here](https://github.com/schibsted/sdk-js-event-tracking-contrib#example-of-recommended-implementation)
-3. Add any other [options](https://github.com/schibsted/sdk-js-event-tracking-contrib#optional-options) you need to the `_opt` object.
+2. Provide values to the `pulse2opt` object as demonstrated [here](https://github.com/schibsted/sdk-js-event-tracking-contrib#example-of-recommended-implementation)
+3. Add any other [options](https://github.com/schibsted/sdk-js-event-tracking-contrib#optional-options) you need to the `pulse2opt` object.
 
 # Snippet
 
@@ -22,14 +22,13 @@ To get started with automatic tracking, please insert the following snippet as c
 
 ```
 <script type="text/javascript">
-var _opt = {
-    pageId: /* a unique ID for the current page */,
+var pulse2opt = {
     clientId: /* your clientId (e.g VG, BT etc) */
 };
 
 (function(){
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.src="//cdn.spid.se/sdk/autoTracker.min.js";
+    g.src="//d1nf1ogr7o23z7.cloudfront.net/autoTracker.min.js";
     s.parentNode.insertBefore(g,s);
 })();
 </script>
@@ -39,11 +38,11 @@ If you use any third party libraries for module loading (such as requirejs), you
 
 # Options
 
-Options can be set in the `_opt` object in the tracking snippet.
+Options can be set in the `pulse2opt` object in the tracking snippet.
 
 ## Required options
 
-There are only two required options to be set in the `_opt` object.
+There are only two required options to be set in the `pulse2opt` object.
 
 `clientId` - a string representing your organization, such as `VG` or `BT`.
 
@@ -63,7 +62,7 @@ Category - Category is not an option itself, but it should go in to the provider
 
 ```
 <script type="text/javascript">
-var _opt = {
+var pulse2opt = {
     pageId: 908123112, 			// String or integer
     clientId: 'Example', 		// String
 	userId: 987841231, 			// String or integer
@@ -89,6 +88,28 @@ The following options can be set:
 `pageType` - The type of page ('Page', 'Article', 'Application', 'Community', 'Service'). Should always be a valid Activitystreams 2.0 object type. (http://www.w3.org/TR/2015/WD-activitystreams-vocabulary-20150129/)
 
 `respectDoNotTrack` - If you want the tracking script to respect users who have set the doNotTrack flag, please set this option to `true`. Otherwise, the doNotTrack flag will not be respected.
+
+`trackingFeatures` - This is for turning on/off tracking of different kinds of event tracking in the tracking code. There are several pre-defined properties:
+
+```
+var pulse2opt = {
+	..
+	trackingFeatures: {
+		pageLoad: false,			// Default: true
+		hashChange: false,			// Default: true
+		pageUnload: false,			// Default: true
+		clickButton: false,			// Default: true
+		clickSubmit: false,			// Default: true
+		relativeScroll: false,		// Default: true
+		itemVisible: false,			// Default: true
+		facebook: false,			// Default: true
+		twitter: false,				// Default: true	
+	},
+	..
+};
+```
+
+All parameters are true by default. If you want to turn off a tracking feature, this is the way to do so. The parameters should be pretty self explanatory. Maybe exept: `clickSubmit`, which is form, comment and poll tracking. And `itemVisible` which is tracking of elements leaving and entering the DOM.
 
 `transport` - A object for transporting data from/to the identity service (CIS) and the data-collector. A default i provided from the SDK, so leave this one out unless you know what you are doing.
 
