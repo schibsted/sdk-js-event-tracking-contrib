@@ -16,7 +16,7 @@ module.exports = {
             return server.requests;
         }, [''], function(res) {
 			this.assert.equal(res.value.length, 1);
-			this.assert.equal(res.value[0].requestBody, "{}");
+			this.assert.equal(res.value[0].requestBody, '{"userId":"urn:schibsted.com:user:123123"}');
 			this.assert.equal(res.value[0].withCredentials, true);
 			this.assert.equal(res.value[0].url, 'https://cis.schibsted.com/api/v1/identify');
         })

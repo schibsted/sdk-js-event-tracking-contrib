@@ -37,7 +37,6 @@ module.exports = {
         })
         .pause(3000)
         .getCookies(function callback(resultNew) {
-			console.log(resultNew);
             // console.log(resultNew.value[2]);
             this.assert.notEqual(resultNew.value[2].value, noUserIdResult.value[2].value);
             this.assert.equal(resultNew.value[2].name, noUserIdResult.value[2].name);
