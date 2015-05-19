@@ -902,12 +902,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @returns {object} Event object
 	 */
 	Events.prototype.trackPageLoad = function(title, activityType) {
-	    var activityObj = this.activity.createScaffold(true);
-	    activityObj['@type'] = activityType || 'Read';
-	    activityObj.object = this.addPageStandards();
-	    activityObj.object.displayName = title || document.title;
+		var activityObj = this.activity.createScaffold(true);
+		activityObj['@type'] = activityType || 'Read';
+		activityObj.object = this.addPageStandards();
+		activityObj.object.displayName = title || document.title;
+		if (document.referrer) {
+			activityObj.origin = {
+				url: document.referrer
+			};
+		}
 
-	    return new EventObj(this.activity, activityObj, ['object']);
+		return new EventObj(this.activity, activityObj, ['object', 'origin']);
 	};
 
 	/**
