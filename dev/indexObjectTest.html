@@ -23,18 +23,10 @@
                 }
             };
             
-            // server.respondWith("POST", "https://stage-identity.spid.se/api/v1/identify", [200, {"Content-Type": "application/json"}, '[{"id": 0, "tweet": "Hello World"}]']);
-            // server.respondWith("POST", "http://stage-identity.spid.se/api/v1/identify", [200, {"Content-Type": "application/json"}, '[{"id": 0, "tweet": "Hello World"}]']);
-            
              server.respondWith([200, {"Content-Type": "application/json; charset=utf-8}"}, JSON.stringify(input)]);
             
              server.autoRespond = true;
              server.autoRespondAfter = 10;
-                
-            /*xhr.onCreate = function(req) {
-                console.log(req);
-                requests.push(req.requestBody);
-            };*/
             
             var myTransport = function(url, data, callback) {
                 console.log('using myTransport for transport');
