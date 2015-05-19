@@ -96,6 +96,13 @@ module.exports = function (grunt) {
                 failOnError: true
             }
         },
+		'http-server': {
+			dev: {
+				root: './',
+				port: '8080',
+				runInBackground: true
+			}
+		},
         nightwatch: {
             options: {
             }
@@ -111,6 +118,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-jsdoc');
     grunt.loadNpmTasks('grunt-jscs');
     grunt.loadNpmTasks('grunt-nightwatch');
+	grunt.loadNpmTasks('grunt-http-server');
 
     // Default task.
     grunt.registerTask('default', ['jshint', 'jscs', 'webpack:dev', 'jsdoc']);
@@ -118,6 +126,6 @@ module.exports = function (grunt) {
     grunt.registerTask('check', ['watch']);
     grunt.registerTask('lint', ['jshint', 'jscs']);
     grunt.registerTask('build', ['webpack:prod', 'lint', 'jsdoc']);
-    grunt.registerTask('integration', ['lint', 'webpack:dev', 'webpack:prod', 'nightwatch']);
+    grunt.registerTask('integration', ['lint', 'http-server:dev', 'webpack:dev', 'webpack:prod', 'nightwatch']);
 
 };

@@ -27,11 +27,12 @@
         "enabled" : false,
         "path" : ""
       },
-      "desiredCapabilities": {
-        "browserName": "firefox",
-        "javascriptEnabled": true,
-        "acceptSslCerts": true
-      }
+			"desiredCapabilities" : {
+			  "browserName" : "phantomjs",
+			  "javascriptEnabled" : true,
+			  "acceptSslCerts" : true,
+			  "phantomjs.binary.path" : "node_modules/phantomjs/bin/phantomjs"
+			}
     },
 
     "chrome" : {
@@ -40,6 +41,13 @@
         "javascriptEnabled": true,
         "acceptSslCerts": true
       }
-    }
+    },
+		"firefox": {
+			  "desiredCapabilities": {
+        "browserName": "firefox",
+        "javascriptEnabled": true,
+        "acceptSslCerts": true
+      }
+		}
   }
 }
