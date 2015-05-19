@@ -21,7 +21,7 @@ module.exports = {
 			this.assert.equal(res.value[0].url, 'https://cis.schibsted.com/api/v1/identify');
         })
         .pause(1000)
-		.click('#test-click-element')
+		.click('body #test-click-element')
 		.pause(100)
 		.execute(function(data) {
             return server.requests;
