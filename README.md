@@ -153,28 +153,28 @@ PageUnload - Experimental
 
 If the class `track-visibility` is set on any element, an event will be produced whenever that element enters and exits the viewport.
 
-The element needs to have an `id` parameter set as well in order to provide identification of the element. The `id` parameter should be unique for the page.
+The element needs to have an `id` parameter set as well in order to provide identification of the element. The `id` parameter should be a unique string, but there are no other requirements than it's existence from the SDK.
 
 ## Track Click
 
 If the class `track-click` is set on any element, an event will be produced whenever that element, or a child element is clicked.
 
-The element needs to have an `id` parameter set as well in order to provide identification of the element. The `id` parameter should be unique for the page.
+The element needs to have an `id` parameter set as well in order to provide identification of the element. The `id` parameter should be a unique string, but there are no other requirements than it's existence from the SDK.
 
 ## Track Form
 
 If the class `track-form` is set on any element, an event will be produced if the element produces an `onsubmit` event.
 
-The element needs to have an `id` parameter set as well in order to provide identification of the element. The `id` parameter should be unique for the page.
+The element needs to have an `id` parameter set as well in order to provide identification of the element. The `id` parameter should be a unique string, but there are no other requirements than it's existence from the SDK.
 
 ## Track Comment
 
 If the class `track-comment` is set on any element, an event will be produced if the element produces an `onsubmit` event.
 
-The element needs to have an `id` parameter set as well in order to provide identification of the element. The `id` parameter should be unique for the page.
+The element needs to have an `id` parameter set as well in order to provide identification of the element. The `id` parameter should be a unique string, but there are no other requirements than it's existence from the SDK.
 
 ## Track Poll
 
 If the class `track-poll` is set on any element, an event will be produced if the element produces an `onsubmit` event.
 
-The element needs to have an `id` parameter set as well in order to provide identification of the element. The `id` parameter should be unique for the page.
+The element needs to have an `id` parameter set as well in order to provide identification of the element. The `id` parameter should be a unique string, but there are no other requirements than it's existence from the SDK.
