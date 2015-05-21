@@ -75,7 +75,7 @@ var pulse2opt = {
 
 (function(){
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.src="//cdn.spid.se/sdk/autoTracker.min.js";
+    g.src="//d1nf1ogr7o23z7.cloudfront.net/autoTracker.min.js";
     s.parentNode.insertBefore(g,s);
 })();
 </script>
