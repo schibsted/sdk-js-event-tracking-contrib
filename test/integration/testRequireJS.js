@@ -28,23 +28,23 @@ module.exports = {
 		})
 		.getCookies(function callback(result) {
             this.assert.equal(result.value.length, 4);
-			
+
 			var nameArray = [
 				'_DataTrackerSession',
 				'_DataTrackerEnv',
 				'_DataTrackerVisitor',
 				'_DataTrackerUser'
 			];
-			
+
 			var valueArray = [
 				'abcd2345',
 				'abcd4567',
 				'abcd3456',
 				'abcd1234'
 			];
-			
+
 			var count = 0;
-			
+
 			while (nameArray.length > 0) {
 				var needleName = nameArray.pop();
 				var needleValue = valueArray.pop();
@@ -57,7 +57,7 @@ module.exports = {
 					}
 				}
 			}
-			
+
 			this.assert.equal(result.value.length, count);
 
         })
