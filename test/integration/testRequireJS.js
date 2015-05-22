@@ -13,6 +13,7 @@ module.exports = {
         })
 		.url('http://127.0.0.1:8080/dev/requiretests/indexSimple.html')
         .waitForElementVisible('body', 1000)
+		.assert.elementPresent('#require-script')
 		.pause(1000)
 		.execute(function() {
             return server.requests;
