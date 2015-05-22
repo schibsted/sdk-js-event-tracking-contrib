@@ -5,3 +5,4 @@ src
 doc
 Gruntfile.js
 dev/sinon-1.14.1.js
+dev/require.js
