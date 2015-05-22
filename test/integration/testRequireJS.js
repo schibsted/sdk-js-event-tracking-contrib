@@ -28,16 +28,38 @@ module.exports = {
 		})
 		.getCookies(function callback(result) {
             this.assert.equal(result.value.length, 4);
+			
+			var nameArray = [
+				'_DataTrackerSession',
+				'_DataTrackerEnv',
+				'_DataTrackerVisitor',
+				'_DataTrackerUser'
+			];
+			
+			var valueArray = [
+				'abcd2345',
+				'abcd4567',
+				'abcd3456',
+				'abcd1234'
+			];
+			
+			var count = 0;
+			
+			while (nameArray.length > 0) {
+				var needleName = nameArray.pop();
+				var needleValue = valueArray.pop();
+				var haystackArray = result.value;
+				
+				for (var j = 0; j < haystackArray.length; j++) {
+					if (haystackArray[j].name === needleName) {
+						this.assert.equal(haystackArray[j].value, needleValue);
+						count++;
+					}
+				}
+			}
+			
+			this.assert.equal(result.value.length, count);
 
-            this.assert.equal(result.value[0].name, '_DataTrackerSession');
-            this.assert.equal(result.value[1].name, '_DataTrackerEnv');
-            this.assert.equal(result.value[2].name, '_DataTrackerVisitor');
-            this.assert.equal(result.value[3].name, '_DataTrackerUser');
-
-			this.assert.equal(result.value[3].value, 'abcd1234');
-            this.assert.equal(result.value[0].value, 'abcd2345');
-            this.assert.equal(result.value[2].value, 'abcd3456');
-            this.assert.equal(result.value[1].value, 'abcd4567');
         })
 		.click('body #test-click-element')
 		.pause(100)
