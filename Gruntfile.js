@@ -94,6 +94,33 @@ module.exports = function (grunt) {
                 },
                 storeStatsTo: 'webpack_stats',
                 failOnError: true
+            },
+			mod: {
+                entry: './lib/track.js',
+                output: {
+                    path: 'dist/',
+                    filename: 'autoTracker.min.js',
+                    library: 'AutoTrack',
+                    libraryTarget: 'umd'
+                },
+                stats: {
+                    // Configure the console output
+                    colors: false,
+                    modules: true,
+                    reasons: true
+                },
+                plugins: [
+                    new webpack.optimize.UglifyJsPlugin(),
+                    new webpack.optimize.DedupePlugin()
+                ],
+                resolve: {
+                    alias: {
+                        vars: './prod/vars',
+                        debug: './debug.prod.js'
+                    }
+                },
+                storeStatsTo: 'webpack_stats',
+                failOnError: true
             }
         },
 		'http-server': {
@@ -126,6 +153,7 @@ module.exports = function (grunt) {
     grunt.registerTask('check', ['watch']);
     grunt.registerTask('lint', ['jshint', 'jscs']);
     grunt.registerTask('build', ['webpack:prod', 'lint', 'jsdoc']);
-    grunt.registerTask('integration', ['lint', 'http-server:dev', 'webpack:dev', 'webpack:prod', 'nightwatch']);
+    grunt.registerTask('build-test', ['lint', 'http-server:dev', 'webpack:dev', 'webpack:prod', 'nightwatch']);
+	grunt.registerTask('integration', ['lint', 'http-server:dev', 'nightwatch']);
 
 };
