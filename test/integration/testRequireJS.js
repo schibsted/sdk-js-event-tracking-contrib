@@ -49,7 +49,7 @@ module.exports = {
 				var needleName = nameArray.pop();
 				var needleValue = valueArray.pop();
 				var haystackArray = result.value;
-				
+
 				for (var j = 0; j < haystackArray.length; j++) {
 					if (haystackArray[j].name === needleName) {
 						this.assert.equal(haystackArray[j].value, needleValue);
