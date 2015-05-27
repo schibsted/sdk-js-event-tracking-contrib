@@ -15,4 +15,4 @@ var input = {
 server.respondWith([200, {'Content-Type': 'application/json; charset=utf-8}'}, JSON.stringify(input)]);
 
 server.autoRespond = true;
-server.autoRespondAfter = 10;
+server.autoRespondAfter = 100;
