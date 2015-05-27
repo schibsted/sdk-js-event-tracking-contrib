@@ -48,7 +48,7 @@ module.exports = {
 
 		// Refreshing the page without cookies should create request to CIS.
 
-		.deleteCookies()
+		.deleteCookie('_DataTrackerSession')
 		.refresh()
 		.waitForElementVisible('body', 1000)
 		.execute(function() {
@@ -56,6 +56,8 @@ module.exports = {
 		}, [''], function(res) {
 			this.assert.equal(res.value.length, 2);
 			this.assert.equal(res.value[0].url, 'https://cis.schibsted.com/api/v1/identify');
+			var requestBody = JSON.parse(res.value[1].requestBody);
+			this.assert.equal(requestBody[0]['@type'], 'Read');
 		})
 
 		// TODO: Do new request with just sessionId deleted to confirm.
