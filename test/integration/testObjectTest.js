@@ -2,7 +2,7 @@
 'use strict';
 
 module.exports = {
-    'Pageload with fake XHR': function (browser) {
+    'CIS request only on new sessions': function (browser) {
         var chai = require('chai');
         browser
         .deleteCookies()
@@ -31,6 +31,38 @@ module.exports = {
 			chai.assert.include(requestBody[0].object['@id'], '1234567', 'pageId passed');
         })
         .pause(1000)
+
+		// Refreshing the page should not create new request to CIS
+
+		.refresh()
+		.waitForElementVisible('body', 1000)
+		.execute(function() {
+			return server.requests;
+		}, [''], function(res) {
+
+			// There should be a pageload request being sent.
+			this.assert.equal(res.value.length, 1);
+			var requestBody = JSON.parse(res.value[0].requestBody);
+			this.assert.equal(requestBody[0]['@type'], 'Read');
+		})
+
+		// Refreshing the page without cookies should create request to CIS.
+
+		.deleteCookie('_DataTrackerSession')
+		.refresh()
+		.waitForElementVisible('body', 1000)
+		.execute(function() {
+			return server.requests;
+		}, [''], function(res) {
+			this.assert.equal(res.value.length, 2);
+			this.assert.equal(res.value[0].url, 'https://cis.schibsted.com/api/v1/identify');
+			var requestBody = JSON.parse(res.value[1].requestBody);
+			this.assert.equal(requestBody[0]['@type'], 'Read');
+		})
+
+		// TODO: Do new request with just sessionId deleted to confirm.
+		// Wrap up
+
         .execute(function() {
             server.restore();
         }, [''])

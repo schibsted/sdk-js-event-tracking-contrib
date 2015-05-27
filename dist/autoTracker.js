@@ -71,17 +71,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	function initTracking(activityOpts) {
-	    var Activity = __webpack_require__(5);
-	    activity = new Activity(activityOpts);
-		if (document.readyState === 'complete') {
-			trackingFunctions(activityOpts.trackingFeatures);
-		} else {
-			window.addEventListener('load', function() {
+		var throttle = activityOpts.throttle || 1;
+		if (Math.random() < throttle) {
+			var Activity = __webpack_require__(5);
+			activity = new Activity(activityOpts);
+			if (document.readyState === 'complete') {
 				trackingFunctions(activityOpts.trackingFeatures);
-			}, false);
-		}
+			} else {
+				window.addEventListener('load', function() {
+					trackingFunctions(activityOpts.trackingFeatures);
+				}, false);
+			}
 
-	    return activity.getPageViewId();
+			return activity.getPageViewId();
+		}
 	}
 
 	module.exports.initTracking = function(activityOpts) {
@@ -506,7 +509,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.pageType = opts.pageType || 'Page';
 	    this.provider = opts.provider || {};
 	    this.userIdDomain = opts.userIdDomain || 'schibsted.com';
-	    this.noCisCookie = opts.noCisCookie || false;
 		this.noRedirect = true;
 	    this.utils = Utils;
 
@@ -1420,6 +1422,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	User.prototype.getUserId = function(callback) {
 
+		// Get IDs from cookies
 	    var cookieId = {
 	        sessionId: this.getUserIdFromCookie(this.sessionKey),
 	        environmentId: this.getUserIdFromCookie(this.envKey),
@@ -1438,42 +1441,52 @@ return /******/ (function(modules) { // webpackBootstrap
 	            userId: undefined,
 	            visitorId: undefined
 	        };
-	        this.transferUserData(cookieId);
 	    } else if (this.activity.loggedIn && typeof cookieId.userId === 'undefined') {
 	        cookieId.userId = this.activity.userId;
-	        this.transferUserData(cookieId);
 	    }
 
+		this.transferUserData(cookieId);
 	    var self = this;
 
-	    this.getUserIdFromService(cookieId, function(err, data) {
+		// If no session ID is found, do request to CIS
+		if (typeof this.idObj.sessionId === 'undefined') {
 
-	        if (err) {
-	            return callback(err);
-	        }
+			this.getUserIdFromService(cookieId, function(err, data) {
 
-	        self.transferUserData(data);
-	        if (typeof self.activity.utils.getQueryVariable('failedToSetCookie') === 'undefined') {
-	            if (!data.cisCookieSet && self.cookiesAllowed && !self.activity.noCisCookie && !self.activity.noRedirect) {
-	                self.getUserIdFromService({ping:'pong'}, function(err, pingData) {
-	                    if (err) {
-	                        callback(err);
-	                    }
-	                    self.transferUserData(pingData);
-	                    if (!pingData.cisCookieSet && self.cookiesAllowed) {
+				if (err) {
+					return callback(err);
+				}
 
-	                        var redirectString = 'https://cis.schibsted.com/redirect/';
-	                        redirectString += '?redirectUrl=' + document.location;
+				self.transferUserData(data);
 
-	                        window.location.assign(redirectString);
-	                    }
-	                    callback(null, self.idObj);
-	                });
-	            }
-	            callback(null, self.idObj);
-	        }
-	        callback(null, self.idObj);
-	    });
+				// Session ID should just be set after requests.
+				self.setSessionIdInCookie();
+				if (typeof self.activity.utils.getQueryVariable('failedToSetCookie') === 'undefined') {
+					// If CIS can't find a CIS cookie, do a ping to CIS to see if it was set on last communication
+					if (!data.cisCookieSet && self.cookiesAllowed && !self.activity.noRedirect) {
+						self.getUserIdFromService({ping:'pong'}, function(err, pingData) {
+							if (err) {
+								callback(err);
+							}
+							self.transferUserData(pingData);
+							// If CIS cookie is not set, do a redirect (if allowed)
+							if (!pingData.cisCookieSet && self.cookiesAllowed) {
+
+								var redirectString = 'https://cis.schibsted.com/redirect/';
+								redirectString += '?redirectUrl=' + document.location;
+
+								window.location.assign(redirectString);
+							}
+							callback(null, self.idObj);
+						});
+					}
+					callback(null, self.idObj);
+				}
+				callback(null, self.idObj);
+			});
+		} else {
+			callback(null, self.idObj);
+		}
 	};
 
 	/**
@@ -1520,9 +1533,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var url = this.activity.opts.userServiceUrl || this.activity.vars.envVars.userServiceUrl;
 
 	    var withCredentials = true;
-	    if (this.activity.noCisCookie) {
-	        withCredentials = false;
-	    }
 
 	    this.transport(url, id, function(err, data) {
 
@@ -1543,17 +1553,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var now = new Date();
 	    var time = now.getTime();
-	    var expireTime = time + 1000000 * 36000;
-	    now.setTime(expireTime);
+	    now.setTime(time + 1000000 * 36000);
 
 	    if (!temporary) {
 	        document.cookie = this.envKey + '=' + this.idObj.envId + ';expires=' + now.toGMTString();
 	    } else {
 	        document.cookie = this.envKey + '=' + this.idObj.envId;
 	    }
-	    document.cookie = this.sessionKey + '=' + this.idObj.sessionId;
 	    document.cookie = this.visitorKey + '=' + this.idObj.visitorId + ';expires=' + now.toGMTString();
 	    document.cookie = this.userKey + '=' + this.idObj.userId + ';expires=' + now.toGMTString();
+	};
+
+	/*
+	 * SessionId should last for 15 minutes in cookie.
+	 */
+	User.prototype.setSessionIdInCookie = function() {
+		var now = new Date();
+	    var time = now.getTime();
+	    now.setTime(time + 15 * 60000);
+		document.cookie = this.sessionKey + '=' + this.idObj.sessionId + ';expires=' + now.toGMTString();
 	};
 
 	module.exports = User;
