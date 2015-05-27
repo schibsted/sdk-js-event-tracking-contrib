@@ -1484,8 +1484,9 @@ return /******/ (function(modules) { // webpackBootstrap
 				}
 				callback(null, self.idObj);
 			});
+		} else {
+			callback(null, self.idObj);
 		}
-		callback(null, self.idObj);
 	};
 
 	/**
