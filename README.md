@@ -34,7 +34,7 @@ var pulse2opt = {
 </script>
 ```
 
-If you use any third party libraries for module loading (such as requirejs), you might have some issues with the current version of autoTracking. The recommendation in such case is to make your own implementation using the bare JS-SDK until an alternative is available.
+If you use any third party libraries for module loading (such as requirejs) or a tag manager (such as tealium), please see the [alternative implementations page](https://github.com/schibsted/sdk-js-event-tracking-contrib/blob/master/IMPLEMENTATIONS.md).
 
 # Options
 
