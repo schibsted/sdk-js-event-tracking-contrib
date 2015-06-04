@@ -275,7 +275,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    document.addEventListener('submit', function(e) {
 	        var target = e.target || e.srcElement;
-
 	        var result = searchTrackingClass(target);
 
 	        if (result === null) {
